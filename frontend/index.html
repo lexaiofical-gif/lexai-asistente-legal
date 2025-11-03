@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LexAI - Asistente Legal Inteligente</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div id="app-container">
+        
+        <!-- Logo SVG Template -->
+        <svg id="logo-svg-template" class="hidden">
+            <symbol id="lexai-logo" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 2L3 5v6.08C3 17.11 7.03 21.84 12 23c4.97-1.16 9-5.89 9-11.92V5L12 2zm0 11.5c-1.93 0-3.5-1.57-3.5-3.5S10.07 6.5 12 6.5s3.5 1.57 3.5 3.5-1.57 3.5-3.5 3.5z"/>
+            </symbol>
+        </svg>
+
+        <!-- VISTA 0: INTRO -->
+        <div id="intro-view" class="view">
+            <div class="intro-container">
+                <svg class="intro-logo" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M12 2L3 5v6.08C3 17.11 7.03 21.84 12 23c4.97-1.16 9-5.89 9-11.92V5L12 2zm0 11.5c-1.93 0-3.5-1.57-3.5-3.5S10.07 6.5 12 6.5s3.5 1.57 3.5 3.5-1.57 3.5-3.5 3.5z"/>
+                </svg>
+                <h1>Bienvenido a LexAI</h1>
+                <p class="intro-subtitle">Tu asistente legal y tributario inteligente para PYMES en Colombia</p>
+                
+                <h2>¿Qué puedes preguntarme?</h2>
+                <div class="intro-cards">
+                    <div class="intro-card">
+                        <i class="fas fa-comments-dollar"></i>
+                        <h3>Consultas Tributarias</h3>
+                        <p>IVA, Renta, RUT, facturación electrónica y más</p>
+                    </div>
+                    <div class="intro-card">
+                        <i class="fas fa-file-signature"></i>
+                        <h3>Derecho Comercial</h3>
+                        <p>Sociedades, contratos y obligaciones</p>
+                    </div>
+                    <div class="intro-card">
+                        <i class="fas fa-file-alt"></i>
+                        <h3>Generar Documentos</h3>
+                        <p>Contratos, certificados y cartas</p>
+                    </div>
+                </div>
+                
+                <button onclick="showView('home-view')" class="btn-primary animate-pulse">
+                    Comenzar <i class="fas fa-arrow-right"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- VISTA 1: HOME -->
+        <div id="home-view" class="view hidden">
+            <nav class="navbar">
+                <div class="navbar-container">
+                    <a href="#" class="navbar-brand">
+                        <svg class="navbar-logo" fill="currentColor" viewBox="0 0 24 24"><use href="#lexai-logo"></use></svg>
+                        LexAI
+                    </a>
+                    <div class="navbar-links">
+                        <button onclick="showView('login-view')" class="btn-text">Iniciar Sesión</button>
+                        <button onclick="showView('register-view')" class="btn-primary-sm">Registrarse</button>
+                    </div>
+                </div>
+            </nav>
+
+            <header class="hero">
+                <div class="hero-container">
+                    <div class="hero-content">
+                        <h1>Su Asistente Legal y Tributario Inteligente</h1>
+                        <p>LexAI ayuda a PYMES en Colombia a navegar el complejo mundo legal y tributario con respuestas claras y generación de documentos.</p>
+                        <button onclick="showView('register-view')" class="btn-primary-lg">Comenzar Gratis</button>
+                    </div>
+                    <div class="hero-image">
+                        <i class="fas fa-desktop"></i>
+                    </div>
+                </div>
+            </header>
+
+            <section class="features">
+                <div class="features-container">
+                    <h2>Potencia tu PYME con LexAI</h2>
+                    <div class="features-grid">
+                        <div class="feature-card">
+                            <i class="fas fa-comments-dollar"></i>
+                            <h3>Consultas Tributarias</h3>
+                            <p>Respuestas instantáneas sobre IVA, Renta, RUT y más</p>
+                        </div>
+                        <div class="feature-card">
+                            <i class="fas fa-file-signature"></i>
+                            <h3>Generación de Documentos</h3>
+                            <p>Contratos y certificados profesionales en minutos</p>
+                        </div>
+                        <div class="feature-card">
+                            <i class="fas fa-shield-alt"></i>
+                            <h3>Seguro y Confiable</h3>
+                            <p>Historial privado y seguro de consultas</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <footer class="footer">
+                <p>&copy; 2025 LexAI. Todos los derechos reservados.</p>
+            </footer>
+        </div>
+
+        <!-- VISTA 2: LOGIN -->
+        <div id="login-view" class="view hidden">
+            <div class="auth-container">
+                <div class="auth-box">
+                    <button onclick="showView('home-view')" class="btn-back">
+                        <i class="fas fa-arrow-left"></i> Volver
+                    </button>
+                    <div class="auth-header">
+                        <svg class="auth-logo" fill="currentColor" viewBox="0 0 24 24"><use href="#lexai-logo"></use></svg>
+                        <h2>Iniciar Sesión</h2>
+                    </div>
+                    <form id="login-form">
+                        <div class="form-group">
+                            <label for="login-email">Email</label>
+                            <input type="email" id="login-email" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="login-password">Contraseña</label>
+                            <input type="password" id="login-password" required>
+                        </div>
+                        <button type="submit" class="btn-primary-full">Entrar</button>
+                        <p id="login-error" class="error-message"></p>
+                        <div class="auth-links">
+                            <a href="#" onclick="showView('recover-view')">¿Olvidaste tu contraseña?</a>
+                        </div>
+                        <div class="auth-links">
+                            <p>¿No tienes cuenta? <a href="#" onclick="showView('register-view')">Regístrate</a></p>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- VISTA 3: REGISTRO -->
+        <div id="register-view" class="view hidden">
+            <div class="auth-container">
+                <div class="auth-box">
+                    <button onclick="showView('home-view')" class="btn-back">
+                        <i class="fas fa-arrow-left"></i> Volver
+                    </button>
+                    <div class="auth-header">
+                        <svg class="auth-logo" fill="currentColor" viewBox="0 0 24 24"><use href="#lexai-logo"></use></svg>
+                        <h2>Crear Cuenta</h2>
+                    </div>
+                    <form id="register-form">
+                        <div class="form-group">
+                            <label for="register-name">Nombre Completo</label>
+                            <input type="text" id="register-name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="register-email">Email</label>
+                            <input type="email" id="register-email" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="register-password">Contraseña</label>
+                            <input type="password" id="register-password" required minlength="6">
+                        </div>
+                        <button type="submit" class="btn-primary-full">Registrarse</button>
+                        <p id="register-error" class="error-message"></p>
+                        <div class="auth-links">
+                            <p>¿Ya tienes cuenta? <a href="#" onclick="showView('login-view')">Inicia Sesión</a></p>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- VISTA 4: RECUPERAR CONTRASEÑA -->
+        <div id="recover-view" class="view hidden">
+            <div class="auth-container">
+                <div class="auth-box">
+                    <button onclick="showView('login-view')" class="btn-back">
+                        <i class="fas fa-arrow-left"></i> Volver
+                    </button>
+                    <div class="auth-header">
+                        <svg class="auth-logo" fill="currentColor" viewBox="0 0 24 24"><use href="#lexai-logo"></use></svg>
+                        <h2>Recuperar Contraseña</h2>
+                    </div>
+                    <form id="recover-form">
+                        <div class="form-group">
+                            <label for="recover-email">Email</label>
+                            <input type="email" id="recover-email" required>
+                        </div>
+                        <button type="submit" class="btn-primary-full">Enviar enlace</button>
+                        <p id="recover-message" class="success-message"></p>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- VISTA 5: DASHBOARD -->
+        <div id="dashboard-view" class="view hidden">
+            <div class="dashboard-layout">
+                <aside class="sidebar">
+                    <a href="#" class="sidebar-brand">
+                        <svg class="sidebar-logo" fill="currentColor" viewBox="0 0 24 24"><use href="#lexai-logo"></use></svg>
+                        LexAI
+                    </a>
+                    <nav class="sidebar-nav">
+                        <ul>
+                            <li><a href="#" onclick="showDashboardSection('chat-section')" class="nav-link active">
+                                <i class="fas fa-comments"></i> Chatbot
+                            </a></li>
+                            <li><a href="#" onclick="showDashboardSection('docs-section')" class="nav-link">
+                                <i class="fas fa-file-alt"></i> Documentos
+                            </a></li>
+                            <li><a href="#" onclick="showDashboardSection('profile-section')" class="nav-link">
+                                <i class="fas fa-user"></i> Perfil
+                            </a></li>
+                            <li id="admin-link-li" class="admin-separator hidden">
+                                <a href="#" onclick="showView('admin-view')" class="nav-link-admin">
+                                    <i class="fas fa-user-shield"></i> Admin Panel
+                                </a>
+                            </li>
+                        </ul>
+                    </nav>
+                    <div class="sidebar-footer">
+                        <button onclick="handleLogout()" class="btn-logout">
+                            <i class="fas fa-sign-out-alt"></i> Cerrar Sesión
+                        </button>
+                    </div>
+                </aside>
+
+                <main class="dashboard-main">
+                    <!-- Sección Chat -->
+                    <section id="chat-section" class="dashboard-section">
+                        <h2>Chat Legal y Tributario</h2>
+                        <div class="chat-container">
+                            <div id="chat-history" class="chat-history">
+                                <div class="bot-bubble">
+                                    Hola, soy LexAI. ¿En qué puedo ayudarte hoy sobre la legislación colombiana?
+                                </div>
+                            </div>
+                            <div id="chat-quick-replies" class="quick-replies">
+                                <button class="quick-reply-btn" data-query="¿Qué es el IVA?">¿Qué es el IVA?</button>
+                                <button class="quick-reply-btn" data-query="¿Qué es una PYME en Colombia?">¿Qué es una PYME?</button>
+                                <button class="quick-reply-btn" data-query="Háblame sobre el RUT">Info sobre RUT</button>
+                                <button class="quick-reply-btn" data-query="¿Qué es una SAS?">Sociedad SAS</button>
+                            </div>
+                            <form id="chat-form" class="chat-form">
+                                <input type="text" id="chat-input" placeholder="Escribe tu consulta..." required>
+                                <button type="submit" class="btn-send">
+                                    <i class="fas fa-paper-plane"></i>
+                                </button>
+                            </form>
+                        </div>
+                    </section>
+
+                    <!-- Sección Documentos -->
+                    <section id="docs-section" class="dashboard-section hidden">
+                        <h2>Generador de Documentos</h2>
+                        <div class="docs-grid">
+                            <div class="doc-card">
+                                <i class="fas fa-file-signature"></i>
+                                <h3>Contrato</h3>
+                                <p>Genera un contrato de prestación de servicios</p>
+                                <button onclick="showDocGenerator('contrato')" class="btn-primary-sm">Generar</button>
+                            </div>
+                            <div class="doc-card">
+                                <i class="fas fa-file-invoice"></i>
+                                <h3>Certificado</h3>
+                                <p>Genera un certificado laboral</p>
+                                <button onclick="showDocGenerator('certificado')" class="btn-primary-sm">Generar</button>
+                            </div>
+                            <div class="doc-card">
+                                <i class="fas fa-file-word"></i>
+                                <h3>Carta</h3>
+                                <p>Genera una carta de renuncia</p>
+                                <button onclick="showDocGenerator('carta')" class="btn-primary-sm">Generar</button>
+                            </div>
+                        </div>
+                        <h3>Mi Historial</h3>
+                        <div class="table-container">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Tipo</th>
+                                        <th>Fecha</th>
+                                        <th>Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="doc-history-table"></tbody>
+                            </table>
+                        </div>
+                    </section>
+
+                    <!-- Sección Perfil -->
+                    <section id="profile-section" class="dashboard-section hidden">
+                        <h2>Mi Perfil</h2>
+                        <div class="profile-box">
+                            <p><strong>Nombre:</strong> <span id="profile-name"></span></p>
+                            <p><strong>Email:</strong> <span id="profile-email"></span></p>
+                            <p><strong>Rol:</strong> <span id="profile-role" class="badge"></span></p>
+                            <p><strong>Miembro desde:</strong> <span id="profile-joined"></span></p>
+                        </div>
+                    </section>
+                </main>
+            </div>
+        </div>
+
+        <!-- VISTA 6: ADMIN -->
+        <div id="admin-view" class="view hidden">
+            <div class="dashboard-layout">
+                <aside class="sidebar sidebar-admin">
+                    <a href="#" class="sidebar-brand">
+                        <svg class="sidebar-logo admin-logo" fill="currentColor" viewBox="0 0 24 24"><use href="#lexai-logo"></use></svg>
+                        Admin
+                    </a>
+                    <nav class="sidebar-nav">
+                        <ul>
+                            <li><a href="#" onclick="showAdminSection('admin-users-section')" class="nav-link-admin active">
+                                <i class="fas fa-users"></i> Usuarios
+                            </a></li>
+                            <li><a href="#" onclick="showAdminSection('admin-chat-section')" class="nav-link-admin">
+                                <i class="fas fa-history"></i> Historial Consultas
+                            </a></li>
+                        </ul>
+                    </nav>
+                    <div class="sidebar-footer">
+                        <button onclick="showView('dashboard-view')" class="btn-back-dashboard">
+                            <i class="fas fa-arrow-left"></i> Volver al Dashboard
+                        </button>
+                        <button onclick="handleLogout()" class="btn-logout">
+                            <i class="fas fa-sign-out-alt"></i> Cerrar Sesión
+                        </button>
+                    </div>
+                </aside>
+
+                <main class="dashboard-main">
+                    <section id="admin-users-section" class="admin-section">
+                        <h2>Gestionar Usuarios</h2>
+                        <div class="table-container">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Nombre</th>
+                                        <th>Email</th>
+                                        <th>Rol</th>
+                                        <th>Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="admin-users-table"></tbody>
+                            </table>
+                        </div>
+                    </section>
+
+                    <section id="admin-chat-section" class="admin-section hidden">
+                        <h2>Historial de Consultas (Todos)</h2>
+                        <div class="table-container">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Usuario</th>
+                                        <th>Consulta</th>
+                                        <th>Respuesta</th>
+                                        <th>Fecha</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="admin-chat-table"></tbody>
+                            </table>
+                        </div>
+                    </section>
+                </main>
+            </div>
+        </div>
+
+        <!-- MODALES -->
+        <div id="doc-generator-modal" class="modal hidden">
+            <div class="modal-content">
+                <h3 id="doc-modal-title">Generar Documento</h3>
+                <form id="doc-generator-form">
+                    <input type="hidden" id="doc-template-type">
+                    <div id="doc-form-fields"></div>
+                    <div class="modal-buttons">
+                        <button type="button" onclick="closeDocGenerator()" class="btn-secondary">Cancelar</button>
+                        <button type="submit" class="btn-primary">Generar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div id="doc-viewer-modal" class="modal hidden">
+            <div class="modal-content modal-large">
+                <h3 id="doc-viewer-title">Vista Previa</h3>
+                <pre id="doc-viewer-content" class="doc-preview"></pre>
+                <div class="modal-buttons">
+                    <button type="button" onclick="closeDocViewer()" class="btn-secondary">Cerrar</button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
