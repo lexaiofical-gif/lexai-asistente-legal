@@ -68,7 +68,7 @@ npx http-server -p 3000 -c-1
 - **Frontend:** http://localhost:3000
 - **Backend API:** http://localhost:5000
 
-### Credenciales Admin por defecto:
+### Credenciales Admin P:
 - **Email:** admin@lexai.co
 - **Password:** admin123
 
