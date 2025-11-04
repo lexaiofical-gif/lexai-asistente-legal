@@ -1,6 +1,7 @@
+
 const User = require('../models/User');
 const jwt = require('jsonwebtoken');
-
+const { sendWelcomeEmail, sendPasswordChangeEmail, sendVerificationEmail, generateVerificationCode } = require('../config/email');
 // Generar JWT Token
 const generateToken = (id) => {
     return jwt.sign({ id }, process.env.JWT_SECRET, {
@@ -24,27 +25,38 @@ exports.register = async (req, res) => {
             });
         }
 
-        // Crear usuario
+        // Generar código de verificación
+        const verificationCode = generateVerificationCode();
+        const verificationCodeExpires = new Date(Date.now() + 15 * 60 * 1000); // 15 minutos
+
+        // Crear usuario (NO verificado)
         const user = await User.create({
             name,
             email,
             password,
-            role: 'user'
+            role: 'user',
+            isVerified: false,
+            verificationCode,
+            verificationCodeExpires
         });
 
-        // Generar token
-        const token = generateToken(user._id);
+        // Enviar código por email
+        try {
+            await sendVerificationEmail(user.email, user.name, verificationCode);
+        } catch (emailError) {
+            // Si falla el email, eliminar usuario y mostrar error
+            await User.findByIdAndDelete(user._id);
+            return res.status(500).json({
+                success: false,
+                message: 'Error al enviar el código de verificación. Por favor intenta nuevamente.'
+            });
+        }
 
         res.status(201).json({
             success: true,
-            token,
-            user: {
-                id: user._id,
-                name: user.name,
-                email: user.email,
-                role: user.role,
-                joined: user.joined
-            }
+            message: 'Registro exitoso. Por favor verifica tu email para activar tu cuenta.',
+            userId: user._id,
+            email: user.email
         });
     } catch (error) {
         res.status(500).json({
@@ -54,6 +66,7 @@ exports.register = async (req, res) => {
         });
     }
 };
+
 
 // @desc    Login de usuario
 // @route   POST /api/auth/login
@@ -88,6 +101,16 @@ exports.login = async (req, res) => {
             });
         }
 
+        // Verificar que la cuenta esté verificada
+        if (!user.isVerified) {
+            return res.status(403).json({
+                success: false,
+                message: 'Por favor verifica tu cuenta. Revisa tu email para obtener el código de verificación.',
+                needsVerification: true,
+                userId: user._id
+            });
+        }
+
         // Generar token
         const token = generateToken(user._id);
 
@@ -102,6 +125,64 @@ exports.login = async (req, res) => {
                 joined: user.joined
             }
         });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: 'Error en el servidor',
+            error: error.message
+        });
+    }
+};
+
+// @desc    Registrar nuevo usuario
+// @route   POST /api/auth/register
+// @access  Public
+exports.register = async (req, res) => {
+    try {
+        const { name, email, password } = req.body;
+
+        // Verificar si el usuario ya existe
+        const userExists = await User.findOne({ email });
+        if (userExists) {
+            return res.status(400).json({
+                success: false,
+                message: 'El correo electrónico ya está registrado'
+            });
+        }
+
+        // Generar código de verificación
+        const verificationCode = generateVerificationCode();
+        const verificationCodeExpires = new Date(Date.now() + 15 * 60 * 1000); // 15 minutos
+
+        // Crear usuario (NO verificado)
+        const user = await User.create({
+            name,
+            email,
+            password,
+            role: 'user',
+            isVerified: false,
+            verificationCode,
+            verificationCodeExpires
+        });
+
+        // Enviar código por email
+        try {
+            await sendVerificationEmail(user.email, user.name, verificationCode);
+            
+            res.status(201).json({
+                success: true,
+                message: 'Registro exitoso. Por favor verifica tu email para activar tu cuenta.',
+                userId: user._id,
+                email: user.email
+            });
+        } catch (emailError) {
+            // Si falla el email, eliminar usuario y mostrar error
+            await User.findByIdAndDelete(user._id);
+            return res.status(500).json({
+                success: false,
+                message: 'Error al enviar el código de verificación. Verifica tu configuración de email.'
+            });
+        }
     } catch (error) {
         res.status(500).json({
             success: false,
@@ -225,6 +306,197 @@ exports.deleteUser = async (req, res) => {
         res.status(500).json({
             success: false,
             message: 'Error en el servidor',
+            error: error.message
+
+        });
+    }
+};
+// @desc    Cambiar contraseña
+// @route   PUT /api/auth/change-password
+// @access  Private
+exports.changePassword = async (req, res) => {
+    try {
+        const { currentPassword, newPassword } = req.body;
+
+        if (!currentPassword || !newPassword) {
+            return res.status(400).json({
+                success: false,
+                message: 'Por favor ingrese la contraseña actual y la nueva'
+            });
+        }
+
+        if (newPassword.length < 6) {
+            return res.status(400).json({
+                success: false,
+                message: 'La nueva contraseña debe tener al menos 6 caracteres'
+            });
+        }
+
+        // Buscar usuario con contraseña
+        const user = await User.findById(req.user.id).select('+password');
+
+        // Verificar contraseña actual
+        const isMatch = await user.comparePassword(currentPassword);
+        if (!isMatch) {
+            return res.status(401).json({
+                success: false,
+                message: 'La contraseña actual es incorrecta'
+            });
+        }
+
+        // Actualizar contraseña
+        user.password = newPassword;
+        await user.save();
+
+        // Enviar email de notificación
+        sendPasswordChangeEmail(user.email, user.name, newPassword).catch(err =>
+            console.error('Error enviando email:', err)
+        );
+
+        res.status(200).json({
+            success: true,
+            message: 'Contraseña actualizada correctamente'
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: 'Error al cambiar la contraseña',
+            error: error.message
+        });
+    }
+};
+// @desc    Verificar código de registro
+// @route   POST /api/auth/verify-code
+// @access  Public
+exports.verifyCode = async (req, res) => {
+    try {
+        const { userId, code } = req.body;
+
+        if (!userId || !code) {
+            return res.status(400).json({
+                success: false,
+                message: 'Por favor proporcione el código de verificación'
+            });
+        }
+
+        // Buscar usuario
+        const user = await User.findById(userId);
+        if (!user) {
+            return res.status(404).json({
+                success: false,
+                message: 'Usuario no encontrado'
+            });
+        }
+
+        // Verificar si ya está verificado
+        if (user.isVerified) {
+            return res.status(400).json({
+                success: false,
+                message: 'Esta cuenta ya ha sido verificada'
+            });
+        }
+
+        // Verificar si el código expiró
+        if (user.verificationCodeExpires < Date.now()) {
+            return res.status(400).json({
+                success: false,
+                message: 'El código de verificación ha expirado. Solicita uno nuevo.'
+            });
+        }
+
+        // Verificar el código
+        if (user.verificationCode !== code) {
+            return res.status(400).json({
+                success: false,
+                message: 'Código de verificación incorrecto'
+            });
+        }
+
+        // Activar cuenta
+        user.isVerified = true;
+        user.verificationCode = undefined;
+        user.verificationCodeExpires = undefined;
+        await user.save();
+
+        // Enviar email de bienvenida
+        sendWelcomeEmail(user.email, user.name).catch(err => 
+            console.error('Error enviando email de bienvenida:', err)
+        );
+
+        // Generar token
+        const token = generateToken(user._id);
+
+        res.status(200).json({
+            success: true,
+            message: 'Cuenta verificada exitosamente',
+            token,
+            user: {
+                id: user._id,
+                name: user.name,
+                email: user.email,
+                role: user.role,
+                joined: user.joined
+            }
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: 'Error al verificar el código',
+            error: error.message
+        });
+    }
+};
+
+// @desc    Reenviar código de verificación
+// @route   POST /api/auth/resend-code
+// @access  Public
+exports.resendCode = async (req, res) => {
+    try {
+        const { userId } = req.body;
+
+        if (!userId) {
+            return res.status(400).json({
+                success: false,
+                message: 'Por favor proporcione el ID de usuario'
+            });
+        }
+
+        // Buscar usuario
+        const user = await User.findById(userId);
+        if (!user) {
+            return res.status(404).json({
+                success: false,
+                message: 'Usuario no encontrado'
+            });
+        }
+
+        // Verificar si ya está verificado
+        if (user.isVerified) {
+            return res.status(400).json({
+                success: false,
+                message: 'Esta cuenta ya ha sido verificada'
+            });
+        }
+
+        // Generar nuevo código
+        const verificationCode = generateVerificationCode();
+        const verificationCodeExpires = new Date(Date.now() + 15 * 60 * 1000);
+
+        user.verificationCode = verificationCode;
+        user.verificationCodeExpires = verificationCodeExpires;
+        await user.save();
+
+        // Enviar nuevo código por email
+        await sendVerificationEmail(user.email, user.name, verificationCode);
+
+        res.status(200).json({
+            success: true,
+            message: 'Nuevo código de verificación enviado a tu email'
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: 'Error al reenviar el código',
             error: error.message
         });
     }

@@ -7,6 +7,30 @@ let state = {
     token: null
 };
 
+
+// Login
+document.getElementById('login-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    
+    const email = document.getElementById('login-email').value;
+    const password = document.getElementById('login-password').value;
+    
+    try {
+        const data = await apiRequest('/auth/login', 'POST', { email, password });
+        
+        if (data.success) {
+            await initializeUserSession(data.token, data.user);
+        }
+    } catch (error) {
+        showError('login-error', error.message);
+    }
+});
+
+
+
+
+
+
 // ========================================
 // UTILIDADES
 // ========================================
@@ -139,38 +163,17 @@ document.getElementById('register-form').addEventListener('submit', async (e) =>
         const data = await apiRequest('/auth/register', 'POST', { name, email, password });
         
         if (data.success) {
-            await initializeUserSession(data.token, data.user);
-            state.token = data.token;
-            state.currentUser = data.user;
-            localStorage.setItem('token', data.token);
-            localStorage.setItem('user', JSON.stringify(data.user));
-            showView('dashboard-view');
+            // Guardar userId para verificación
+            document.getElementById('verify-user-id').value = data.userId;
+            
+            // Mostrar vista de verificación
+            showView('verify-view');
+            
+            // Mostrar mensaje
+            showSuccess('verify-success', 'Código enviado a ' + email);
         }
     } catch (error) {
         showError('register-error', error.message);
-    }
-});
-
-// Login
-document.getElementById('login-form').addEventListener('submit', async (e) => {
-    e.preventDefault();
-    
-    const email = document.getElementById('login-email').value;
-    const password = document.getElementById('login-password').value;
-    
-    try {
-        const data = await apiRequest('/auth/login', 'POST', { email, password });
-        
-        if (data.success) {
-            await initializeUserSession(data.token, data.user);
-            state.token = data.token;
-            state.currentUser = data.user;
-            localStorage.setItem('token', data.token);
-            localStorage.setItem('user', JSON.stringify(data.user));
-            showView('dashboard-view');
-        }
-    } catch (error) {
-        showError('login-error', error.message);
     }
 });
 
@@ -220,6 +223,40 @@ function renderProfile() {
     });
     document.getElementById('profile-joined').textContent = joinedDate;
 }
+// Cambiar contraseña
+document.getElementById('change-password-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    
+    const currentPassword = document.getElementById('current-password').value;
+    const newPassword = document.getElementById('new-password').value;
+    const confirmPassword = document.getElementById('confirm-password').value;
+    const messageEl = document.getElementById('password-change-message');
+    
+    // Validar que las contraseñas coincidan
+    if (newPassword !== confirmPassword) {
+        messageEl.textContent = 'Las contraseñas no coinciden';
+        messageEl.style.color = 'var(--danger)';
+        return;
+    }
+    
+    try {
+        const data = await apiRequest('/auth/change-password', 'PUT', {
+            currentPassword,
+            newPassword
+        });
+        
+        if (data.success) {
+            messageEl.textContent = '✅ Contraseña cambiada correctamente. Se ha enviado un email de confirmación.';
+            messageEl.style.color = 'var(--success)';
+            
+            // Limpiar formulario
+            document.getElementById('change-password-form').reset();
+        }
+    } catch (error) {
+        messageEl.textContent = '❌ ' + error.message;
+        messageEl.style.color = 'var(--danger)';
+    }
+});
 
 // ========================================
 // CHATBOT
@@ -625,4 +662,47 @@ async function initializeUserSession(token, user) {
     localStorage.setItem('user', JSON.stringify(user));
     await loadTemplates();
     showView('dashboard-view');
+}
+// Verificar código
+document.getElementById('verify-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    
+    const userId = document.getElementById('verify-user-id').value;
+    const code = document.getElementById('verification-code').value.trim();
+    
+    if (code.length !== 6) {
+        showError('verify-error', 'El código debe tener 6 dígitos');
+        return;
+    }
+    
+    try {
+        const data = await apiRequest('/auth/verify-code', 'POST', { userId, code });
+        
+        if (data.success) {
+            showSuccess('verify-success', '✅ ¡Cuenta verificada! Redirigiendo...');
+            document.getElementById('verification-code').value = '';
+            
+            setTimeout(async () => {
+                await initializeUserSession(data.token, data.user);
+            }, 2000);
+        }
+    } catch (error) {
+        showError('verify-error', error.message);
+    }
+});
+
+// Reenviar código
+async function resendVerificationCode() {
+    const userId = document.getElementById('verify-user-id').value;
+    
+    try {
+        const data = await apiRequest('/auth/resend-code', 'POST', { userId });
+        
+        if (data.success) {
+            showSuccess('verify-success', '✅ ' + data.message);
+            document.getElementById('verification-code').value = '';
+        }
+    } catch (error) {
+        showError('verify-error', error.message);
+    }
 }

@@ -94,4 +94,4 @@ MIT License
 
 ## 👨‍💻 Autor
 
-DAMIAN.G
+DAMIAN.G.

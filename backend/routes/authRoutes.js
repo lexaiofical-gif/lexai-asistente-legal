@@ -6,16 +6,22 @@ const {
     getMe, 
     getAllUsers, 
     updateUserRole, 
-    deleteUser 
+    deleteUser,
+    changePassword,
+    verifyCode,
+    resendCode
 } = require('../controllers/authController');
 const { protect, authorize } = require('../middleware/authMiddleware');
 
 // Rutas públicas
 router.post('/register', register);
 router.post('/login', login);
+router.post('/verify-code', verifyCode);
+router.post('/resend-code', resendCode);
 
 // Rutas protegidas
 router.get('/me', protect, getMe);
+router.put('/change-password', protect, changePassword);
 
 // Rutas de administrador
 router.get('/users', protect, authorize('admin'), getAllUsers);
