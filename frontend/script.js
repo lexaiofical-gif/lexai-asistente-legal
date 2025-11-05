@@ -6,7 +6,8 @@
 //const API_URL = 'http://localhost:5000/api';
 const API_URL = window.location.hostname === 'localhost' 
     ? 'http://localhost:5000/api'
-    : 'https://lexai-backend.onrender.com/api';
+    : 'https://lexai-backend-ugs7.onrender.com/api';
+    //'https://lexai-backend.onrender.com/api';
 
 
 // 🔹 Estado global de la aplicación
