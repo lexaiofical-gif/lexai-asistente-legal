@@ -1,12 +1,19 @@
 // ========================================
 // CONFIGURACIÓN Y ESTADO GLOBAL
 // ========================================
+
+// 📡 Si estás trabajando en tu computadora (modo local), usa el backend local
+//const API_URL = 'http://localhost:5000/api';
 const API_URL = window.location.hostname === 'localhost' 
     ? 'http://localhost:5000/api'
-    : 'https://TU-BACKEND-URL.onrender.com/api';
+    : 'https://lexai-backend.onrender.com/api';
+
+
+// 🔹 Estado global de la aplicación
 let state = {
-    currentUser: null,
-    token: null
+    currentUser: null, // Guarda los datos del usuario logueado
+    token: null,       // Guarda el token JWT si existe
+    chatHistory: []    // (Opcional) historial del chat o datos temporales
 };
 
 

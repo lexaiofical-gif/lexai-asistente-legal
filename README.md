@@ -38,14 +38,7 @@ npm install
 ```
 
 ### 3. Configurar variables de entorno
-Crear archivo `.env` en la carpeta `backend`:
-```env
-PORT=5000
-MONGODB_URI=mongodb://localhost:27017/lexai
-JWT_SECRET=tu_clave_secreta_super_segura
-JWT_EXPIRE=7d
-NODE_ENV=development
-```
+
 
 ### 4. Crear usuario administrador
 ```bash
@@ -90,8 +83,8 @@ lexai-proyecto/
 
 ## 📝 Licencia
 
-MIT License
+SUPER DAMIAN
 
 ## 👨‍💻 Autor
 
-DAMIAN.G.....
+DAMIAN.G....

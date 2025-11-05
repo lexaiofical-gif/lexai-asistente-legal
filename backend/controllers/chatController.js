@@ -61,7 +61,115 @@ const chatRules = [
         keywords: ["gracias", "muchas gracias", "excelente", "perfecto", "bien"], 
         response: "¡Con gusto! Estoy aquí para ayudarte. Si tienes más preguntas sobre temas legales o tributarios en Colombia, no dudes en consultarme.", 
         reference: "LexAI Asistente" 
-    }
+    },
+    // ⚡ NUEVAS REGLAS AÑADIDAS ⚡
+    { 
+        keywords: ["camara de comercio", "registro mercantil", "matricula mercantil"], 
+        response: "Toda empresa o persona natural que realice actividades comerciales en Colombia debe registrarse en la Cámara de Comercio de su jurisdicción. Este registro da existencia legal al negocio y debe renovarse cada año antes del 31 de marzo.", 
+        reference: "Código de Comercio, Art. 26 a 33" 
+    },
+    { 
+        keywords: ["seguridad social", "eps", "pensión", "arl", "salud"], 
+        response: "Todo contratista independiente en Colombia debe estar afiliado al sistema de seguridad social: EPS (salud), ARL (riesgos laborales) y fondo de pensiones. El pago de aportes se hace mediante la planilla PILA, calculado sobre el 40% del ingreso mensual.", 
+        reference: "Ley 100 de 1993, Decreto 1072 de 2015" 
+    },
+    { 
+        keywords: ["niif", "contabilidad", "estados financieros", "normas internacionales"], 
+        response: "Las NIIF (Normas Internacionales de Información Financiera) establecen los principios contables para la presentación de estados financieros en Colombia. Las PYMES aplican una versión simplificada conocida como NIIF para PYMES.", 
+        reference: "Decreto 2420 de 2015 y sus modificaciones" 
+    },
+    { 
+        keywords: ["dian", "declaracion", "plazo", "impuestos"], 
+        response: "La DIAN es la entidad encargada de la administración y control de impuestos nacionales. Los plazos para declarar varían según el tipo de impuesto y el NIT del contribuyente. Es importante revisar el calendario tributario de cada año.", 
+        reference: "Resolución 000165 de 2023 DIAN" 
+    },
+    { 
+        keywords: ["empleado", "contrato laboral", "trabajador", "prestaciones sociales"], 
+        response: "Un contrato laboral implica subordinación, salario y cumplimiento de horario. El empleador debe pagar prestaciones sociales: cesantías, intereses, prima de servicios, vacaciones y seguridad social. Todo contrato laboral debe formalizarse por escrito.", 
+        reference: "Código Sustantivo del Trabajo, Art. 22 a 65" 
+    },
+    {
+    keywords: ["ica", "industria y comercio", "impuesto municipal", "retencion ica"],
+    response: "El ICA (Impuesto de Industria y Comercio) es un tributo municipal que grava las actividades comerciales, industriales o de servicios realizadas en una jurisdicción. La tarifa varía según el municipio y la actividad económica.",
+    reference: "Decreto 1333 de 1986, Acuerdos Municipales"
+    },
+     ///////////////////
+    {
+    keywords: ["regimen simple", "simple tributacion", "rst", "régimen simple de tributación"],
+    response: "El Régimen Simple de Tributación (RST) es un sistema alternativo que unifica varios impuestos nacionales y municipales. Facilita el cumplimiento tributario y reduce cargas para pequeños empresarios con ingresos menores a 100.000 UVT anuales.",
+    reference: "Ley 1943 de 2018, Ley 2010 de 2019, Estatuto Tributario Art. 903 y ss."
+},
+{
+    keywords: ["firma digital", "firma electronica", "documento electronico", "certificado digital"],
+    response: "Las firmas digitales y electrónicas tienen validez jurídica en Colombia siempre que cumplan con los principios de autenticidad e integridad. Se usan para contratos, facturas electrónicas y trámites ante entidades públicas.",
+    reference: "Ley 527 de 1999, Decreto 2364 de 2012"
+},
+{
+    keywords: ["derechos de autor", "propiedad intelectual", "marca", "patente", "registro de marca"],
+    response: "Los derechos de autor protegen obras literarias, artísticas y de software. Las marcas y patentes se registran ante la Superintendencia de Industria y Comercio (SIC) y otorgan derechos exclusivos de uso al titular.",
+    reference: "Ley 23 de 1982, Decisión Andina 351 de 1993"
+},
+{
+    keywords: ["cesantias", "cesantía", "cesantia", "intereses cesantias"],
+    response: "Las cesantías equivalen a un mes de salario por cada año trabajado y deben consignarse en un fondo antes del 14 de febrero de cada año. Los intereses sobre cesantías son del 12% anual.",
+    reference: "Código Sustantivo del Trabajo, Art. 249 y ss."
+},
+{
+    keywords: ["prima", "prima de servicios", "pago prima", "fechas prima"],
+    response: "La prima de servicios se paga dos veces al año: en junio y en diciembre. Corresponde a 15 días de salario por cada semestre trabajado y aplica para todos los trabajadores con contrato laboral.",
+    reference: "Código Sustantivo del Trabajo, Art. 306"
+},
+{
+    keywords: ["vacaciones", "descanso remunerado", "dias de vacaciones"],
+    response: "Todo trabajador tiene derecho a 15 días hábiles consecutivos de vacaciones por cada año laborado. Pueden ser compensadas parcialmente en dinero con acuerdo entre las partes.",
+    reference: "Código Sustantivo del Trabajo, Art. 186"
+},
+{
+    keywords: ["arl", "riesgos laborales", "accidente laboral", "afiliacion arl"],
+    response: "La ARL cubre accidentes y enfermedades laborales. Todo trabajador o contratista debe estar afiliado según su nivel de riesgo, que va de clase I a clase V. El aporte lo realiza el empleador o contratante.",
+    reference: "Ley 1562 de 2012, Decreto 1072 de 2015"
+},
+{
+    keywords: ["contabilidad", "libros contables", "revisor fiscal", "obligaciones contables"],
+    response: "Las empresas deben llevar contabilidad conforme a las NIIF y conservar los libros contables actualizados. Las sociedades por acciones deben tener revisor fiscal si superan los topes de activos o ingresos establecidos por ley.",
+    reference: "Código de Comercio, Art. 19 y 207"
+},
+{
+    keywords: ["banco", "cuenta empresarial", "cuenta bancaria", "abrir cuenta"],
+    response: "Toda empresa debe tener una cuenta bancaria a nombre de la persona jurídica o natural comerciante. Es obligatoria para facturación, pagos y cumplimiento tributario formal ante la DIAN.",
+    reference: "Circular Básica Jurídica Superfinanciera"
+},
+{
+    keywords: ["contratista", "honorarios", "pagos independientes", "planilla pila"],
+    response: "Los contratistas deben facturar o expedir cuenta de cobro por sus servicios, pagar su seguridad social mediante la planilla PILA y estar registrados en el RUT si sus ingresos superan los topes establecidos.",
+    reference: "Decreto 1072 de 2015, Estatuto Tributario Art. 437"
+},
+{
+    keywords: ["inversion extranjera", "remesa", "transferencia internacional", "repatriacion"],
+    response: "La inversión extranjera en Colombia está permitida en la mayoría de sectores. Debe registrarse ante el Banco de la República para garantizar la repatriación de utilidades y el reintegro de capital.",
+    reference: "Decreto 2080 de 2000, Resolución Externa 8 de 2000"
+},
+{
+    keywords: ["emprendedor", "crear negocio", "startup", "empresa nueva"],
+    response: "Los emprendedores pueden registrar una empresa como persona natural o crear una SAS. Se recomienda iniciar con el RUT, Cámara de Comercio y facturación electrónica. También existen beneficios en programas como iNNpulsa y Fondo Emprender.",
+    reference: "Ley 2069 de 2020, Ley 1258 de 2008"
+},
+{
+    keywords: ["licencia de funcionamiento", "uso de suelo", "permiso municipal"],
+    response: "Antes de operar un establecimiento de comercio, se debe verificar el uso de suelo ante la Alcaldía y tramitar la licencia de funcionamiento cuando sea requerida según la actividad económica.",
+    reference: "Decreto 1879 de 2008, Normas municipales"
+},
+{
+    keywords: ["pension", "jubilacion", "retiro laboral", "colpensiones", "afp"],
+    response: "El sistema pensional en Colombia tiene dos regímenes: el público (Colpensiones) y el privado (AFP). Los hombres se pensionan a los 62 años y las mujeres a los 57, con mínimo 1.300 semanas cotizadas.",
+    reference: "Ley 100 de 1993, Ley 797 de 2003"
+},
+{
+    keywords: ["contrato confidencialidad", "nda", "acuerdo de confidencialidad"],
+    response: "El acuerdo de confidencialidad (NDA) protege información sensible entre partes que colaboran o negocian. Establece las condiciones de uso, protección y sanciones por divulgación indebida.",
+    reference: "Código de Comercio, Art. 863 y ss., Ley 1581 de 2012"
+}      
+  
 ];
 
 // @desc    Procesar consulta de chatbot
