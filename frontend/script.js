@@ -1,7 +1,9 @@
 // ========================================
 // CONFIGURACIÓN Y ESTADO GLOBAL
 // ========================================
-const API_URL = 'https://lexai-asistente-legal.onrender.com/api';
+const API_URL = window.location.hostname === 'localhost' 
+    ? 'http://localhost:5000/api'
+    : 'https://TU-BACKEND-URL.onrender.com/api';
 let state = {
     currentUser: null,
     token: null
