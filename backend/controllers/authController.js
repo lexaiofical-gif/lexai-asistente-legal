@@ -41,16 +41,16 @@ exports.register = async (req, res) => {
         });
 
         // Enviar código por email
-        try {
-            await sendVerificationEmail(user.email, user.name, verificationCode);
-        } catch (emailError) {
+        //try {
+            //await sendVerificationEmail(user.email, user.name, verificationCode);
+        //} catch (emailError) {
             // Si falla el email, eliminar usuario y mostrar error
-            await User.findByIdAndDelete(user._id);
-            return res.status(500).json({
-                success: false,
-                message: 'Error al enviar el código de verificación. Por favor intenta nuevamente.'
-            });
-        }
+        //    await User.findByIdAndDelete(user._id);
+        //    return res.status(500).json({
+        //        success: false,
+        //        message: 'Error al enviar el código de verificación. Por favor intenta nuevamente.'
+        //    });
+        //}
 
         res.status(201).json({
             success: true,
