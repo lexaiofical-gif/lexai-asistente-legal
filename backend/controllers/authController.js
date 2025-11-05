@@ -145,7 +145,7 @@ exports.register = async (req, res) => {
         const userExists = await User.findOne({ email });
         if (userExists) {
             return res.status(400).json({
-                success: false,
+                success: true,
                 message: 'El correo electrónico ya está registrado'
             });
         }
