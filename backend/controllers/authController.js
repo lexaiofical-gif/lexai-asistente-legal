@@ -35,7 +35,7 @@ exports.register = async (req, res) => {
             email,
             password,
             role: 'user',
-            isVerified: false,
+            isVerified: true,
             verificationCode,
             verificationCodeExpires
         });
@@ -104,7 +104,7 @@ exports.login = async (req, res) => {
         // Verificar que la cuenta esté verificada
         if (!user.isVerified) {
             return res.status(403).json({
-                success: false,
+                success: true,
                 message: 'Por favor verifica tu cuenta. Revisa tu email para obtener el código de verificación.',
                 needsVerification: true,
                 userId: user._id
@@ -145,7 +145,7 @@ exports.register = async (req, res) => {
         const userExists = await User.findOne({ email });
         if (userExists) {
             return res.status(400).json({
-                success: true,
+                success: false,
                 message: 'El correo electrónico ya está registrado'
             });
         }
@@ -160,7 +160,7 @@ exports.register = async (req, res) => {
             email,
             password,
             role: 'user',
-            isVerified: false,
+            isVerified: true,
             verificationCode,
             verificationCodeExpires
         });
