@@ -177,11 +177,11 @@ exports.register = async (req, res) => {
             });
         } catch (emailError) {
             // Si falla el email, eliminar usuario y mostrar error
-            await User.findByIdAndDelete(user._id);
-            return res.status(500).json({
-                success: false,
-                message: 'Error al enviar el código de verificación. Verifica tu configuración de email.'
-            });
+            //await User.findByIdAndDelete(user._id);
+            //return res.status(500).json({
+            //    success: false,
+            //    message: 'Error al enviar el código de verificación. Verifica tu configuración de email.'
+            //});
         }
     } catch (error) {
         res.status(500).json({

@@ -83,7 +83,7 @@ lexai-proyecto/
 
 ## 📝 Licencia
 
-SUPER DAMIAN
+SUPER DAMIAN 1.1
 
 ## 👨‍💻 Autor
 
