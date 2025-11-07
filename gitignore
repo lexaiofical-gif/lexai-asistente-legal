@@ -4,3 +4,7 @@ node_modules/
 .DS_Store
 backend/.env
 backend/node_modules/
+
+
+//ES DONDE SE LE PONE LAS REGLAS A HITGUB DE CUALES ACHIVOS SUBIR Y CUALES IGNORAR PARA Q NO SUBA NUNCA 
+// A EL REPOSITORIO 
