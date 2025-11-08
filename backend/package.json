@@ -1,5 +1,4 @@
 //LIBRERIAS EXTERNAS DE NPM COMO LAS SON EXPRESS MONGODB QUE SON PARA DECIRLE A EL SISTEMA Q VA A USAR Y LO Q LO VA ACONFORMAR
-
 {
   "name": "lexai-backend",
   "version": "1.0.0",
@@ -18,15 +17,24 @@
   "author": "Tu Nombre",
   "license": "MIT",
   "dependencies": {
-    "bcryptjs": "^2.4.3", //PARA INSCRIPTAR CONTRASEÑAS 
-    "cors": "^2.8.5",     //PERMITE FRONTEND A CONECTARCE CON BACKEND
-    "dotenv": "^16.3.1",  // PARA LEER CONTRASEÑAS Y CLAVES DE .env
-    "express": "^4.18.2",  //PARA CREAR EL SEVIDOR WED Y MANEJAR RAS RUTAS URLs
-    "express-validator": "^7.0.1", //PARA VALIDAR QUE LOS DATOS EMAILS ETC SEAN CORRECTOS 
-    "jsonwebtoken": "^9.0.2", //PARA CREAR TOKENS DE SESION LOGIN
-    "mongodb": "^6.20.0", //EL CONTROLADOR DRIVER OFICIAL PARA CONECTAR LA BASE DE DATOS
-    "mongoose": "^8.0.0",  //PARA HABLAR MAS FACIL CON MONGO DB (POR DEBAJO PERO DEJA USAR MODELOS)
-    "nodemailer": "^7.0.10" //PARA ENVIAR EMAILS DESDE MI SERVIDOR RECUPERAR CONTRASEÑA ETC
+    "bcryptjs": "^2.4.3",
+    //PARA INSCRIPTAR CONTRASEÑAS 
+    "cors": "^2.8.5",
+    //PERMITE FRONTEND A CONECTARCE CON BACKEND
+    "dotenv": "^16.3.1",
+    // PARA LEER CONTRASEÑAS Y CLAVES DE .env
+    "express": "^4.18.2",
+    //PARA CREAR EL SEVIDOR WED Y MANEJAR RAS RUTAS URLs
+    "express-validator": "^7.0.1",
+    //PARA VALIDAR QUE LOS DATOS EMAILS ETC SEAN CORRECTOS 
+    "jsonwebtoken": "^9.0.2",
+    //PARA CREAR TOKENS DE SESION LOGIN
+    "mongodb": "^6.20.0",
+    //EL CONTROLADOR DRIVER OFICIAL PARA CONECTAR LA BASE DE DATOS
+    "mongoose": "^8.0.0",
+    //PARA HABLAR MAS FACIL CON MONGO DB (POR DEBAJO PERO DEJA USAR MODELOS)
+    "nodemailer": "^7.0.10"
+    //PARA ENVIAR EMAILS DESDE MI SERVIDOR RECUPERAR CONTRASEÑA ETC
   },
   "devDependencies": {
     "nodemon": "^3.0.1"
