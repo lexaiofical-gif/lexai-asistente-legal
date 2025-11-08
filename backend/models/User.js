@@ -1,6 +1,8 @@
+//DEFINE COMO SE VE UN USUARIO Y LA LOGICA DE SEGURIDAD PARA LAS CONTRASEÑAS
+    //IMPORTA A MONGO PARA CREAR LA ESTRUCTURA DE DATOS SCHEMA
 const mongoose = require('mongoose');
-const bcrypt = require('bcryptjs');
-
+const bcrypt = require('bcryptjs');   //INCRIPTA CONTRASEÑAS
+       //DEFINE LA ESTRUCTURA DE COMO SE VE UN USUARIO EN LA ABSE DE DATOS
 const userSchema = new mongoose.Schema({
     name: {
         type: String,
@@ -59,5 +61,5 @@ userSchema.pre('save', async function(next) {
 userSchema.methods.comparePassword = async function(candidatePassword) {
     return await bcrypt.compare(candidatePassword, this.password);
 };
-
+//CREA Y EXPORTA EL MODELO QUE PERMITE INTERACTUAR CON LA COLECCION DE USUARIOS 
 module.exports = mongoose.model('User', userSchema);
