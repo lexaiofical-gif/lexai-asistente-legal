@@ -1,8 +1,18 @@
-//DEFINE COMO SE VE UN USUARIO Y LA LOGICA DE SEGURIDAD PARA LAS CONTRASEÑAS
-    //IMPORTA A MONGO PARA CREAR LA ESTRUCTURA DE DATOS SCHEMA
+// ============================================
+// MODELO DE USUARIO (User.js)
+// ============================================
+
+// Define la estructura de los usuarios y la lógica de seguridad para las contraseñas
+
+// Importa mongoose para crear la estructura (schema) en MongoDB
 const mongoose = require('mongoose');
-const bcrypt = require('bcryptjs');   //INCRIPTA CONTRASEÑAS
-       //DEFINE LA ESTRUCTURA DE COMO SE VE UN USUARIO EN LA ABSE DE DATOS
+
+// Importa bcrypt para encriptar las contraseñas
+const bcrypt = require('bcryptjs');
+
+// ============================================
+// DEFINICIÓN DEL ESQUEMA DEL USUARIO
+// ============================================
 const userSchema = new mongoose.Schema({
     name: {
         type: String,
@@ -21,7 +31,7 @@ const userSchema = new mongoose.Schema({
         type: String,
         required: [true, 'Por favor ingrese una contraseña'],
         minlength: 6,
-        select: false
+        select: false // No mostrar la contraseña en las consultas por seguridad
     },
     role: {
         type: String,
@@ -43,23 +53,32 @@ const userSchema = new mongoose.Schema({
         default: Date.now
     }
 }, {
-    timestamps: true
+    timestamps: true // Agrega automáticamente createdAt y updatedAt
 });
 
-// Encriptar contraseña antes de guardar
+// ============================================
+// MIDDLEWARE PARA ENCRIPTAR CONTRASEÑA
+// ============================================
+// Antes de guardar el usuario, encripta la contraseña si ha sido modificada
 userSchema.pre('save', async function(next) {
-    if (!this.isModified('password')) {
-        return next();
-    }
-    
+    if (!this.isModified('password')) return next();
+
     const salt = await bcrypt.genSalt(10);
     this.password = await bcrypt.hash(this.password, salt);
     next();
 });
 
-// Método para comparar contraseñas
+// ============================================
+// MÉTODO PERSONALIZADO PARA VALIDAR CONTRASEÑAS
+// ============================================
+// Compara la contraseña ingresada con la almacenada en la base de datos
 userSchema.methods.comparePassword = async function(candidatePassword) {
     return await bcrypt.compare(candidatePassword, this.password);
 };
-//CREA Y EXPORTA EL MODELO QUE PERMITE INTERACTUAR CON LA COLECCION DE USUARIOS 
+
+// ============================================
+// EXPORTAR EL MODELO
+// ============================================
+// Crea y exporta el modelo para interactuar con la colección "users" en MongoDB
 module.exports = mongoose.model('User', userSchema);
+
