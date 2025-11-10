@@ -25,7 +25,9 @@ const generateVerificationCode = () => {
     return Math.floor(100000 + Math.random() * 900000).toString();
 };
 
-// Función para enviar código de verificación
+// ========================================
+// 1. CORREO DE VERIFICACIÓN (Registro)
+// ========================================
 const sendVerificationEmail = async (email, name, code) => {
     const mailOptions = {
         from: process.env.EMAIL_FROM,
@@ -70,38 +72,34 @@ const sendVerificationEmail = async (email, name, code) => {
     }
 };
 
-// Función para enviar email de bienvenida
+// ========================================
+// 2. CORREO DE BIENVENIDA (Activación)
+// ========================================
 const sendWelcomeEmail = async (email, name) => {
+    // ... (El código de sendWelcomeEmail es correcto y lo mantengo) ...
     const mailOptions = {
         from: process.env.EMAIL_FROM,
         to: email,
         subject: '¡Bienvenido a LexAI! 🏛️',
         html: `
-            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+             <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
                 <div style="background: linear-gradient(to right, #4f46e5, #7c3aed); padding: 30px; text-align: center;">
-                    <h1 style="color: white; margin: 0;">¡Bienvenido a LexAI!</h1>
-                </div>
-                <div style="padding: 30px; background: #f9fafb;">
-                    <h2 style="color: #1f2937;">Hola ${name},</h2>
-                    <p style="color: #4b5563; font-size: 16px; line-height: 1.6;">
-                        Tu cuenta ha sido verificada exitosamente. ¡Bienvenido a LexAI!
-                    </p>
-                    <p style="color: #4b5563; font-size: 16px; line-height: 1.6;">
-                        Ahora puedes:
-                    </p>
-                    <ul style="color: #4b5563; font-size: 16px; line-height: 1.8;">
-                        <li>💬 Hacer consultas sobre legislación colombiana</li>
-                        <li>📄 Generar documentos legales profesionales</li>
-                        <li>📚 Acceder a referencias legales actualizadas</li>
-                        <li>💼 Gestionar tu historial de consultas y documentos</li>
-                    </ul>
-                </div>
-                <div style="background: #1f2937; padding: 20px; text-align: center;">
-                    <p style="color: #9ca3af; font-size: 12px; margin: 0;">
-                        © 2025 LexAI. Todos los derechos reservados.
-                    </p>
-                </div>
-            </div>
+                     <h1 style="color: white; margin: 0;">¡Bienvenido a LexAI!</h1>
+                 </div>
+                 <div style="padding: 30px; background: #f9fafb;">
+                     <h2 style="color: #1f2937;">Hola ${name},</h2>
+                     <p style="color: #4b5563; font-size: 16px; line-height: 1.6;">Tu cuenta ha sido verificada exitosamente. ¡Bienvenido a LexAI!</p>
+                     <ul style="color: #4b5563; font-size: 16px; line-height: 1.8;">
+                         <li>💬 Hacer consultas sobre legislación colombiana</li>
+                         <li>📄 Generar documentos legales profesionales</li>
+                         <li>📚 Acceder a referencias legales actualizadas</li>
+                         <li>💼 Gestionar tu historial de consultas y documentos</li>
+                     </ul>
+                 </div>
+                 <div style="background: #1f2937; padding: 20px; text-align: center;">
+                     <p style="color: #9ca3af; font-size: 12px; margin: 0;">© 2025 LexAI. Todos los derechos reservados.</p>
+                 </div>
+             </div>
         `
     };
 
@@ -113,32 +111,29 @@ const sendWelcomeEmail = async (email, name) => {
     }
 };
 
-// Función para enviar email de cambio de contraseña
+// ========================================
+// 3. CORREO DE CAMBIO DE CONTRASEÑA (Dashboard)
+// ========================================
 const sendPasswordChangeEmail = async (email, name, newPassword) => {
+    // ... (El código de sendPasswordChangeEmail es correcto y lo mantengo) ...
     const mailOptions = {
         from: process.env.EMAIL_FROM,
         to: email,
         subject: 'Cambio de Contraseña - LexAI',
         html: `
-            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-                <div style="background: linear-gradient(to right, #4f46e5, #7c3aed); padding: 30px; text-align: center;">
-                    <h1 style="color: white; margin: 0;">Cambio de Contraseña</h1>
-                </div>
-                <div style="padding: 30px; background: #f9fafb;">
-                    <h2 style="color: #1f2937;">Hola ${name},</h2>
-                    <p style="color: #4b5563; font-size: 16px; line-height: 1.6;">
-                        Tu contraseña en LexAI ha sido actualizada exitosamente.
-                    </p>
-                    <p style="color: #dc2626; font-size: 14px;">
-                        ⚠️ Si no fuiste tú, contacta con soporte inmediatamente.
-                    </p>
-                </div>
-                <div style="background: #1f2937; padding: 20px; text-align: center;">
-                    <p style="color: #9ca3af; font-size: 12px; margin: 0;">
-                        © 2025 LexAI. Todos los derechos reservados.
-                    </p>
-                </div>
-            </div>
+             <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+                 <div style="background: linear-gradient(to right, #4f46e5, #7c3aed); padding: 30px; text-align: center;">
+                     <h1 style="color: white; margin: 0;">Cambio de Contraseña</h1>
+                 </div>
+                 <div style="padding: 30px; background: #f9fafb;">
+                     <h2 style="color: #1f2937;">Hola ${name},</h2>
+                     <p style="color: #4b5563; font-size: 16px; line-height: 1.6;">Tu contraseña en LexAI ha sido actualizada exitosamente.</p>
+                     <p style="color: #dc2626; font-size: 14px;">⚠️ Si no fuiste tú, contacta con soporte inmediatamente.</p>
+                 </div>
+                 <div style="background: #1f2937; padding: 20px; text-align: center;">
+                     <p style="color: #9ca3af; font-size: 12px; margin: 0;">© 2025 LexAI. Todos los derechos reservados.</p>
+                 </div>
+             </div>
         `
     };
 
@@ -150,32 +145,55 @@ const sendPasswordChangeEmail = async (email, name, newPassword) => {
     }
 };
 
+// ========================================
+// 4. NUEVA FUNCIÓN: RECUPERACIÓN (Login/Código)
+// ========================================
+const sendPasswordResetCode = async (email, name, code) => {
+    const mailOptions = {
+        from: process.env.EMAIL_FROM,
+        to: email,
+        subject: 'Código de Restablecimiento - LexAI 🔑',
+        html: `
+            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+                <div style="background: linear-gradient(to right, #e54f46, #ed7c3a); padding: 30px; text-align: center;">
+                    <h1 style="color: white; margin: 0;">Restablecer Contraseña</h1>
+                </div>
+                <div style="padding: 30px; background: #f9fafb;">
+                    <h2 style="color: #1f2937;">Hola ${name},</h2>
+                    <p style="color: #4b5563; font-size: 16px; line-height: 1.6;">
+                        Solicitaste un restablecimiento de contraseña. Usa el siguiente código en la aplicación:
+                    </p>
+                    <div style="background: white; padding: 30px; border-radius: 12px; margin: 30px 0; text-align: center; border: 2px dashed #e54f46;">
+                        <p style="color: #6b7280; font-size: 14px; margin: 0 0 10px 0;">Tu código de restablecimiento es:</p>
+                        <p style="color: #e54f46; font-size: 42px; font-weight: bold; letter-spacing: 8px; margin: 0;">${code}</p>
+                    </div>
+                    <p style="color: #dc2626; font-size: 14px; text-align: center;">
+                        ⏱️ Este código expira en 15 minutos.
+                    </p>
+                </div>
+                <div style="background: #1f2937; padding: 20px; text-align: center;">
+                    <p style="color: #9ca3af; font-size: 12px; margin: 0;">© 2025 LexAI. Todos los derechos reservados.</p>
+                </div>
+            </div>
+        `
+    };
+
+    try {
+        await transporter.sendMail(mailOptions);
+        console.log(`✅ Código de restablecimiento enviado a: ${email}`);
+    } catch (error) {
+        console.error('❌ Error enviando código de restablecimiento:', error);
+        throw error;
+    }
+};
+
+// ========================================
+// EXPORTACIÓN ÚNICA
+// ========================================
 module.exports = {
     sendWelcomeEmail,
     sendPasswordChangeEmail,
     sendVerificationEmail,
-    generateVerificationCode
-};
-
-// Función para enviar email de recuperación (DEBES AÑADIR ESTO)
-const sendPasswordResetEmail = async (email, name, resetToken) => {
-    // ⚠️ ATENCIÓN: Esta URL DEBE apuntar a una vista en tu Frontend
-    // donde el usuario ingrese el nuevo password.
-    const resetUrl = `[Tu URL de Frontend]/reset-password?token=${resetToken}`;
-
-    const mailOptions = {
-        // ... (Configuración de FROM, TO, SUBJECT) ...
-        html: `
-             <h2>Hola ${name},</h2>
-             <p>Solicitaste un restablecimiento de contraseña. Haz clic en el enlace:</p>
-             <a href="${resetUrl}">Restablecer Contraseña</a>
-             <p>Este enlace expirará pronto.</p>
-        `
-    };
-    // ... (Llamada a transporter.sendMail) ...
-};
-
-module.exports = {
-    // ... exporta todas las demás funciones ...
-    sendPasswordResetEmail // ⬅️ ¡Añadir esta nueva exportación!
+    generateVerificationCode,
+    sendPasswordResetCode // ⬅️ ¡Esta es la función que necesitas para el controlador!
 };
