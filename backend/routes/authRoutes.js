@@ -29,3 +29,9 @@ router.put('/users/:id/role', protect, authorize('admin'), updateUserRole);
 router.delete('/users/:id', protect, authorize('admin'), deleteUser);
 
 module.exports = router;
+
+// ... (otras rutas como router.post('/register', ...)) ...
+
+// Rutas de Recuperación de Contraseña
+router.post('/forgotpassword', authController.forgotPassword);
+router.put('/resetpassword', authController.resetPasswordVerifyCode); // Usa PUT porque está modificando el recurso (usuario)
