@@ -96,7 +96,7 @@ exports.login = async (req, res) => {
         }
 
         // COMPROBAR CONTRASEÑA
-        const isMatch = await user.matchPassword(password);
+        const isMatch = await user.comparePassword(password);
         if (!isMatch) {
             return res.status(400).json({ message: 'Contraseña incorrecta' });
         }
