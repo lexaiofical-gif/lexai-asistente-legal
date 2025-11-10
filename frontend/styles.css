@@ -319,6 +319,11 @@ body {
         box-shadow: 0 0 0 10px rgba(79, 70, 229, 0);
     }
 }
+<!-- BOTÓN PARA MODIFICAR USUARIO -->
+<button id="btn-toggle-user" class="btn-primary-sm">
+  <i class="fas fa-user-gear"></i> Modificar Usuario
+</button>
+
 
 /* ========================================
    NAVBAR
