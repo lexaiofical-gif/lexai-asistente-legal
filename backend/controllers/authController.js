@@ -40,29 +40,29 @@ exports.register = async (req, res) => {
     try {
         const { name, email, password } = req.body;
 
+        // 1. VERIFICAR SI YA EXISTE UN USUARIO CON ESE CORREO
         const userExists = await User.findOne({ email });
         if (userExists) {
             return res.status(400).json({ message: 'El correo ya está registrado' });
         }
 
-        // CAMBIO CLAVE: Crear NUEVO USUARIO como VERIFICADO (isVerified: true)
+        // 2. CREAR NUEVO USUARIO Y MARCARLO COMO VERIFICADO
         const user = await User.create({
             name,
             email,
             password,
-            isVerified: true // ⬅️ ¡CAMBIADO A TRUE!
+            isVerified: true // ⬅️ CAMBIO CLAVE: Activación inmediata
         });
 
-        // Opcional: Enviar correo de bienvenida inmediatamente
-        // Asegúrate de que sendWelcomeEmail está importada en authController.js
+        // 3. ENVIAR CORREO DE BIENVENIDA (Opcional, pero se mantiene la notificación)
         await sendWelcomeEmail(user.email, user.name); 
 
-        // Generar token de una vez para iniciar sesión automáticamente
+        // 4. GENERAR TOKEN PARA INICIO DE SESIÓN AUTOMÁTICO
         const token = generateToken(user._id);
 
         res.status(201).json({
             success: true,
-            message: 'Usuario registrado e iniciado sesión correctamente',
+            message: 'Usuario registrado y activo. Puedes iniciar sesión.',
             token,
             user: {
                 id: user._id,
