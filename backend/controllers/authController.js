@@ -305,3 +305,87 @@ exports.changePassword = async (req, res) => {
         res.status(500).json({ message: 'Error al cambiar la contraseña' });
     }
 };
+// ================================================
+// ❓ RECUPERAR CONTRASEÑA (INICIO DEL PROCESO)
+// ================================================
+// RUTA: POST /api/auth/forgotpassword
+// QUIÉN LO ACTIVA: FORMULARIO DE PANTALLA DE LOGIN
+// ================================================
+exports.forgotPassword = async (req, res) => {
+    try {
+        const { email } = req.body;
+        const user = await User.findOne({ email });
+
+        if (!user) {
+            // Mensaje de seguridad: Siempre responde exitoso para no revelar si el correo existe o no
+            return res.status(200).json({ message: 'Si el correo existe, recibirás un código para restablecer tu contraseña.' });
+        }
+
+        // Reutilizar la lógica de código de verificación
+        const verificationCode = generateVerificationCode();
+        
+        // Guardar el código en los campos de verificación existentes (o puedes crear campos nuevos para el reset)
+        // Usaremos los campos de verificación existentes para simplificar
+        user.verificationCode = verificationCode;
+        // Establecer una expiración de 15 minutos para el código
+        user.verificationCodeExpires = Date.now() + 15 * 60 * 1000;
+        await user.save({ validateBeforeSave: false }); // No validar contraseña al guardar
+
+        // ⚠️ Llamar a la nueva función de email que crearemos en email.js
+        await sendPasswordResetCode(user.email, user.name, verificationCode); 
+
+        res.status(200).json({ 
+            success: true, 
+            message: 'Código de recuperación enviado.',
+            email: user.email // Enviar el email para el Frontend
+        });
+
+    } catch (error) {
+        console.error('Error en forgotPassword:', error);
+        res.status(500).json({ message: 'Error al enviar el código de recuperación.' });
+    }
+};
+
+// ================================================
+// ❓ VERIFICAR CÓDIGO Y RESTABLECER CONTRASEÑA
+// ================================================
+// RUTA: PUT /api/auth/resetpassword
+// QUIÉN LO ACTIVA: PANTALLA DE INGRESO DEL CÓDIGO
+// ================================================
+exports.resetPasswordVerifyCode = async (req, res) => {
+    try {
+        const { email, code, newPassword } = req.body;
+
+        const user = await User.findOne({ email });
+        if (!user) {
+            return res.status(400).json({ message: 'Usuario no encontrado' });
+        }
+        
+        // 1. Validar que el código sea correcto
+        if (user.verificationCode !== code) {
+            return res.status(400).json({ message: 'Código de verificación incorrecto.' });
+        }
+
+        // 2. Validar que el código no haya expirado
+        if (user.verificationCodeExpires < Date.now()) {
+            return res.status(400).json({ message: 'El código ha expirado. Solicita uno nuevo.' });
+        }
+
+        // 3. Actualizar la contraseña
+        user.password = newPassword;
+        
+        // 4. Limpiar los campos de código
+        user.verificationCode = undefined;
+        user.verificationCodeExpires = undefined;
+        await user.save(); // Mongoose se encargará de hashear el nuevo password antes de guardar (si está definido en tu modelo User)
+
+        res.status(200).json({
+            success: true,
+            message: 'Contraseña restablecida exitosamente. Puedes iniciar sesión.'
+        });
+
+    } catch (error) {
+        console.error('Error en resetPasswordVerifyCode:', error);
+        res.status(500).json({ message: 'Error al restablecer la contraseña.' });
+    }
+};
