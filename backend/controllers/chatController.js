@@ -172,13 +172,19 @@ const chatRules = [
   
 ];
 
+// PALABRA CLAVE: "RESPUESTAS AUTOMÁTICAS Y MEMORIA DE CHAT"
+// ESTE ARCHIVO SE ACTIVA CUANDO EL USUARIO ENVÍA UNA PREGUNTA DESDE EL FRONTEND DEL CHAT
+// SE CONECTA CON EL MODELO ChatHistory PARA GUARDAR LAS CONVERSACIONES Y CON req.user PARA SABER QUIÉN PREGUNTA
+// SE PUEDE MODIFICAR LA LISTA DE PALABRAS CLAVE Y RESPUESTAS (chatRules), PERO NO LA ESTRUCTURA DE FUNCIONES
+
 // @desc    Procesar consulta de chatbot
 // @route   POST /api/chat/query
 // @access  Private
 exports.processQuery = async (req, res) => {
     try {
-        const { query } = req.body;
+        const { query } = req.body;   // CAPTURA LA PREGUNTA QUE EL USUARIO ENVÍA DESDE EL FRONTEND
         
+        // VERIFICA QUE EL USUARIO NO ENVÍE UNA PREGUNTA VACÍA
         if (!query || query.trim().length === 0) {
             return res.status(400).json({
                 success: false,
@@ -186,25 +192,29 @@ exports.processQuery = async (req, res) => {
             });
         }
 
+        // CONVIERTE LA CONSULTA A MINÚSCULAS PARA HACER MÁS FÁCIL LA COMPARACIÓN
         const normalizedQuery = query.trim().toLowerCase();
         
-        // Buscar respuesta en las reglas
+        // MENSAJE PREDETERMINADO SI EL CHATBOT NO ENCUENTRA NINGUNA COINCIDENCIA
         let botResponse = {
             response: "Lo siento, no pude entender tu consulta específica. Te recomiendo reformular tu pregunta sobre temas como: IVA, Impuesto de Renta, RUT, PYMES, contratos, facturación electrónica, sociedades SAS, salario mínimo, retención en la fuente o liquidación de empresas. ¿Puedo ayudarte con alguno de estos temas?",
             reference: "LexAI Asistente"
         };
 
+        // RECORRE LAS REGLAS (chatRules) Y BUSCA SI ALGUNA PALABRA CLAVE COINCIDE CON LA PREGUNTA DEL USUARIO
         for (const rule of chatRules) {
             if (rule.keywords.some(keyword => normalizedQuery.includes(keyword))) {
+                // SI ENCUENTRA COINCIDENCIA, GUARDA LA RESPUESTA Y SU REFERENCIA
                 botResponse = {
                     response: rule.response,
                     reference: rule.reference
                 };
-                break;
+                break; // DETIENE LA BÚSQUEDA AL ENCONTRAR LA PRIMERA COINCIDENCIA
             }
         }
 
-        // Guardar en el historial
+        // GUARDA LA PREGUNTA Y RESPUESTA EN LA BASE DE DATOS (MONGODB)
+        // SE CONECTA CON EL MODELO ChatHistory PARA GUARDAR QUIÉN PREGUNTÓ Y QUÉ RESPUESTA SE DIO
         const chatEntry = await ChatHistory.create({
             userId: req.user._id,
             userEmail: req.user.email,
@@ -213,6 +223,7 @@ exports.processQuery = async (req, res) => {
             reference: botResponse.reference
         });
 
+        // ENVÍA LA RESPUESTA FINAL AL FRONTEND PARA MOSTRARLA EN PANTALLA
         res.status(200).json({
             success: true,
             data: {
@@ -223,6 +234,7 @@ exports.processQuery = async (req, res) => {
             }
         });
     } catch (error) {
+        // MENSAJE DE ERROR SI ALGO FALLA AL PROCESAR LA CONSULTA
         res.status(500).json({
             success: false,
             message: 'Error al procesar la consulta',
@@ -236,16 +248,19 @@ exports.processQuery = async (req, res) => {
 // @access  Private
 exports.getUserChatHistory = async (req, res) => {
     try {
+        // BUSCA TODAS LAS CONVERSACIONES DEL USUARIO LOGEADO EN LA BASE DE DATOS
         const history = await ChatHistory.find({ userId: req.user._id })
-            .sort({ timestamp: -1 })
-            .limit(100);
+            .sort({ timestamp: -1 })  // ORDENA POR FECHA, DE LA MÁS RECIENTE A LA MÁS ANTIGUA
+            .limit(100);               // LIMITA A 100 REGISTROS PARA NO SOBRECARGAR EL SISTEMA
 
+        // DEVUELVE EL HISTORIAL AL FRONTEND PARA MOSTRARLO EN PANTALLA
         res.status(200).json({
             success: true,
             count: history.length,
             data: history
         });
     } catch (error) {
+        // MENSAJE DE ERROR SI NO SE PUEDE CONSULTAR EL HISTORIAL
         res.status(500).json({
             success: false,
             message: 'Error al obtener el historial',
@@ -259,17 +274,21 @@ exports.getUserChatHistory = async (req, res) => {
 // @access  Private/Admin
 exports.getAllChatHistory = async (req, res) => {
     try {
+        // BUSCA TODAS LAS CONVERSACIONES DE TODOS LOS USUARIOS
+        // SOLO UN ADMINISTRADOR PUEDE USAR ESTA FUNCIÓN
         const history = await ChatHistory.find()
-            .populate('userId', 'name email')
+            .populate('userId', 'name email') // MUESTRA EL NOMBRE Y CORREO DEL USUARIO QUE HIZO CADA CONSULTA
             .sort({ timestamp: -1 })
-            .limit(500);
+            .limit(500);                      // LIMITA EL RESULTADO A 500 REGISTROS
 
+        // ENVÍA TODOS LOS REGISTROS AL ADMINISTRADOR
         res.status(200).json({
             success: true,
             count: history.length,
             data: history
         });
     } catch (error) {
+        // MENSAJE SI OCURRE UN ERROR AL CARGAR EL HISTORIAL
         res.status(500).json({
             success: false,
             message: 'Error al obtener el historial',
