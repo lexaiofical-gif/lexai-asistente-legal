@@ -34,41 +34,42 @@ const generateToken = (id) => {
 };
 
 // ================================================
-// 3️⃣ REGISTRO DE NUEVO USUARIO
-// ================================================
-// PALABRA CLAVE: REGISTRO / CREAR CUENTA
-// RUTA: POST /api/auth/register
-// QUIÉN LO ACTIVA: FRONTEND (FORMULARIO DE REGISTRO)
-// SE CONECTA CON: MODELO USER Y ARCHIVO email.js
+// 3️⃣ REGISTRO DE NUEVO USUARIO 
 // ================================================
 exports.register = async (req, res) => {
     try {
         const { name, email, password } = req.body;
 
-        // VERIFICAR SI YA EXISTE UN USUARIO CON ESE CORREO
         const userExists = await User.findOne({ email });
         if (userExists) {
             return res.status(400).json({ message: 'El correo ya está registrado' });
         }
 
-        // CREAR CÓDIGO DE VERIFICACIÓN
-        const verificationCode = generateVerificationCode();
-
-        // CREAR NUEVO USUARIO NO VERIFICADO
+        // CAMBIO CLAVE: Crear NUEVO USUARIO como VERIFICADO (isVerified: true)
         const user = await User.create({
             name,
             email,
             password,
-            verificationCode,
-            isVerified: false
+            isVerified: true // ⬅️ ¡CAMBIADO A TRUE!
         });
 
-        // ENVIAR CORREO DE VERIFICACIÓN
-        await sendVerificationEmail(user.email, user.name, verificationCode);
+        // Opcional: Enviar correo de bienvenida inmediatamente
+        // Asegúrate de que sendWelcomeEmail está importada en authController.js
+        await sendWelcomeEmail(user.email, user.name); 
+
+        // Generar token de una vez para iniciar sesión automáticamente
+        const token = generateToken(user._id);
 
         res.status(201).json({
             success: true,
-            message: 'Usuario registrado. Revisa tu correo para verificar la cuenta.'
+            message: 'Usuario registrado e iniciado sesión correctamente',
+            token,
+            user: {
+                id: user._id,
+                name: user.name,
+                email: user.email,
+                role: user.role
+            }
         });
 
     } catch (error) {
