@@ -171,6 +171,50 @@ exports.resendCode = async (req, res) => {
     }
 };
 
+
+// ================================================
+// 5️⃣.5 VERIFICAR CÓDIGO DE CORREO
+// ================================================
+// PALABRA CLAVE: VERIFICAR CUENTA
+// RUTA: POST /api/auth/verify-code
+// QUIÉN LO ACTIVA: FRONTEND (CUANDO USUARIO INGRESA EL CÓDIGO ENVIADO AL CORREO)
+// SE CONECTA CON: MODELO USER Y EMAIL
+// ================================================
+exports.verifyCode = async (req, res) => {
+    try {
+        const { email, code } = req.body;
+
+        const user = await User.findOne({ email });
+        if (!user) {
+            return res.status(400).json({ message: 'Usuario no encontrado' });
+        }
+
+        if (user.verificationCode !== code) {
+            return res.status(400).json({ message: 'Código incorrecto' });
+        }
+
+        user.isVerified = true;
+        user.verificationCode = undefined;
+        await user.save();
+
+        // Asegúrate de tener sendWelcomeEmail importado
+        await sendWelcomeEmail(user.email, user.name);
+
+        // Asegúrate de tener generateToken definido
+        const token = generateToken(user._id);
+
+        res.status(200).json({
+            success: true,
+            message: 'Cuenta verificada correctamente',
+            token
+        });
+
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Error al verificar la cuenta' });
+    }
+};
+
 // ================================================
 // 6️⃣ OBTENER PERFIL DEL USUARIO LOGUEADO
 // ================================================
