@@ -1,30 +1,52 @@
-// ============================================
-// IMPORTAMOS LAS DEPENDENCIAS NECESARIAS
-// ============================================
+// =============================================================
+// IMPORTACIÓN DE DEPENDENCIAS
+// =============================================================
 
-// JWT SE USA PARA CREAR Y VERIFICAR TOKENS DE AUTENTICACIÓN
+// PALABRA CLAVE: require()
+// "require" SE USA PARA IMPORTAR MÓDULOS EN NODE.JS
+
+// SE IMPORTA LA LIBRERÍA JSONWEBTOKEN PARA CREAR Y VERIFICAR TOKENS DE AUTENTICACIÓN (JWT)
 const jwt = require('jsonwebtoken');
 
-// IMPORTAMOS EL MODELO DE USUARIO PARA PODER BUSCARLO EN LA BASE DE DATOS
+// SE IMPORTA EL MODELO DE USUARIO PARA PODER BUSCAR INFORMACIÓN EN LA BASE DE DATOS
 const User = require('../models/User');
 
 
-// ============================================
-// FUNCIÓN QUE PROTEGE LAS RUTAS PRIVADAS
-// ============================================
+// =============================================================
+// MIDDLEWARE: PROTEGER RUTAS PRIVADAS
+// =============================================================
 
-// ESTA FUNCIÓN SE ASEGURA DE QUE EL USUARIO TENGA UN TOKEN VÁLIDO ANTES DE ENTRAR A CIERTAS RUTAS
+// PALABRA CLAVE: exports.protect
+// ESTE MIDDLEWARE SE ACTIVA AUTOMÁTICAMENTE CUANDO SE USA EN UNA RUTA, EJEMPLO:
+// router.get('/perfil', protect, obtenerPerfil);
+
+// ENTONCES:
+// 1️⃣ EL USUARIO HACE UNA PETICIÓN A UNA RUTA PRIVADA
+// 2️⃣ ANTES DE ENTRAR AL CONTROLADOR, SE EJECUTA "protect"
+// 3️⃣ "protect" REVISA EL TOKEN DEL USUARIO Y DECIDE SI PUEDE CONTINUAR O NO
+
 exports.protect = async (req, res, next) => {
-    let token;
+    let token; // VARIABLE DONDE SE GUARDARÁ EL TOKEN ENCONTRADO
 
-    // VERIFICAMOS SI EL TOKEN EXISTE EN LOS HEADERS DE LA PETICIÓN
-    // EL TOKEN DEBE VENIR COMO: "Authorization: Bearer [token]"
+    // ================================================================
+    // PASO 1: VERIFICAR SI EL TOKEN EXISTE EN LOS HEADERS
+    // ================================================================
+
+    // PALABRA CLAVE: req.headers.authorization
+    // AQUÍ SE REVISA SI EL CLIENTE (FRONTEND) ENVIÓ EL TOKEN EN EL ENCABEZADO HTTP
+    // EL TOKEN SE ENVÍA COMO: "Authorization: Bearer [TOKEN_AQUI]"
+
     if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
-        // AQUÍ SEPARAMOS EL TEXTO Y SOLO TOMAMOS EL TOKEN
+        // SEPARA EL TEXTO "Bearer" Y SOLO GUARDA EL TOKEN
         token = req.headers.authorization.split(' ')[1];
     }
 
-    // SI NO HAY TOKEN, SIGNIFICA QUE NO ESTÁ AUTORIZADO
+    // ================================================================
+    // PASO 2: SI NO HAY TOKEN, SE BLOQUEA EL ACCESO
+    // ================================================================
+
+    // PALABRA CLAVE: return res.status()
+    // SE DEVUELVE UNA RESPUESTA HTTP 401 = NO AUTORIZADO
     if (!token) {
         return res.status(401).json({
             success: false,
@@ -32,14 +54,28 @@ exports.protect = async (req, res, next) => {
         });
     }
 
+    // ================================================================
+    // PASO 3: SI EXISTE TOKEN, SE VERIFICA Y DECODIFICA
+    // ================================================================
+
     try {
-        // VERIFICAMOS QUE EL TOKEN SEA VÁLIDO USANDO LA CLAVE SECRETA DEL ARCHIVO .env
+        // PALABRA CLAVE: jwt.verify()
+        // ESTA FUNCIÓN VERIFICA QUE EL TOKEN SEA VÁLIDO USANDO LA CLAVE SECRETA DEL ARCHIVO .env
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
         
-        // BUSCAMOS AL USUARIO EN LA BASE DE DATOS USANDO EL ID QUE ESTÁ DENTRO DEL TOKEN
+        // ================================================================
+        // PASO 4: BUSCAR AL USUARIO EN LA BASE DE DATOS
+        // ================================================================
+
+        // PALABRA CLAVE: await User.findById()
+        // AQUÍ SE USA EL ID DEL TOKEN PARA BUSCAR AL USUARIO
+        // SI EL USUARIO EXISTE, SE GUARDA EN req.user (ASÍ SE COMPARTE CON EL RESTO DE LA APP)
         req.user = await User.findById(decoded.id);
         
-        // SI EL USUARIO YA NO EXISTE EN LA BASE DE DATOS, SE NIEGA EL ACCESO
+        // ================================================================
+        // PASO 5: VALIDAR QUE EL USUARIO EXISTA
+        // ================================================================
+
         if (!req.user) {
             return res.status(401).json({
                 success: false,
@@ -47,11 +83,18 @@ exports.protect = async (req, res, next) => {
             });
         }
 
-        // SI TODO ESTÁ BIEN, PASAMOS AL SIGUIENTE PASO O RUTA
+        // ================================================================
+        // PASO 6: SI TODO ESTÁ CORRECTO, CONTINÚA AL SIGUIENTE MIDDLEWARE O CONTROLADOR
+        // ================================================================
+
+        // PALABRA CLAVE: next()
+        // ESTA FUNCIÓN PERMITE PASAR AL SIGUIENTE PASO DEL PROCESO
         next();
 
     } catch (error) {
-        // SI EL TOKEN ES INVÁLIDO O EXPIRÓ, SE ENVÍA UN MENSAJE DE ERROR
+        // ================================================================
+        // SI EL TOKEN ES INVÁLIDO O EXPIRÓ, SE BLOQUEA EL ACCESO
+        // ================================================================
         return res.status(401).json({
             success: false,
             message: 'Token inválido o expirado'
@@ -60,23 +103,35 @@ exports.protect = async (req, res, next) => {
 };
 
 
-// ============================================
-// FUNCIÓN PARA VERIFICAR SI EL USUARIO ES ADMIN O TIENE UN ROL PERMITIDO
-// ============================================
+// =============================================================
+// MIDDLEWARE: VERIFICAR ROLES Y PERMISOS
+// =============================================================
 
-// ESTA FUNCIÓN SE USA PARA RESTRINGIR RUTAS SEGÚN EL ROL DEL USUARIO (EJEMPLO: SOLO ADMIN)
+// PALABRA CLAVE: exports.authorize
+// ESTE MIDDLEWARE SE USA DESPUÉS DE "protect"
+// SU FUNCIÓN ES COMPROBAR SI EL USUARIO TIENE PERMISO SEGÚN SU ROL
+// EJEMPLO:
+// router.get('/admin', protect, authorize('admin'), funcionDelAdmin);
+
+// ENTONCES:
+// - PRIMERO SE EJECUTA "protect" (VERIFICA TOKEN)
+// - LUEGO "authorize" (REVISA SI EL ROL DEL USUARIO ES PERMITIDO)
+
 exports.authorize = (...roles) => {
     return (req, res, next) => {
 
-        // SI EL ROL DEL USUARIO NO ESTÁ EN LA LISTA DE ROLES PERMITIDOS, NO PUEDE ENTRAR
+        // PALABRA CLAVE: roles.includes()
+        // REVISA SI EL ROL DEL USUARIO ESTÁ DENTRO DE LA LISTA DE ROLES PERMITIDOS
         if (!roles.includes(req.user.role)) {
+            // SI NO TIENE PERMISO, SE DEVUELVE ERROR 403 = PROHIBIDO
             return res.status(403).json({
                 success: false,
                 message: `El rol '${req.user.role}' no tiene permiso para acceder a esta ruta`
             });
         }
 
-        // SI TIENE PERMISO, CONTINÚA CON LA PETICIÓN
+        // SI EL ROL ESTÁ PERMITIDO, SE CONTINÚA
         next();
     };
 };
+
