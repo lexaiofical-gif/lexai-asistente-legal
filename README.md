@@ -120,6 +120,56 @@ JWT + BCRYPTJS.
 Middleware PROTECT Y AUTHORIZE.
 TOKEN GUARDADO EN LOCALSTORAGE Y ENVIADO EN CADA PETICIÓN.
 
+LO Q AHI EN CADA CARPETA  
+(Carpeta frontend)
+📁index.html → Define todas las vistas y formularios de la SPA.
+Se puede editar: estructura de vistas, formularios, IDs, textos, botones.
+📁styles.css → Controla la apariencia visual del sistema.
+Se puede editar: colores, tipografías, tamaños, disposición de elementos, animaciones.
+📁script.js → Controla la interacción, navegación, conexión con la API, autenticación y roles.
+Se puede editar: lógica de envío de datos, validaciones, manejo de tokens, interacción de usuario, panel Admin.
+
+⚙️ BACKEND (Carpeta backend)
+
+📁server.js → Inicia servidor Express, configura middlewares y monta rutas.
+Se puede editar: puerto, middlewares globales, endpoints importados, configuración del servidor.
+
+📁.env → Variables de entorno como MONGODB_URI, JWT_SECRET, JWT_EXPIRE.
+Se puede editar: URL de la base de datos, claves secretas, expiración de tokens, configuración de producción o desarrollo.
+
+📁config/database.js → Función connectDB que conecta MongoDB usando Mongoose.
+Se puede editar: lógica de conexión, opciones de Mongoose, manejo de errores de conexión.
+
+📁models/User.js → Esquema de usuario (nombre, email, contraseña, roles).
+Se puede editar: campos del usuario, validaciones, roles permitidos.
+
+📁models/ChatHistory.js → Esquema de historial de chats vinculado a usuario.
+Se puede editar: campos de chat, referencias legales, timestamps.
+
+📁models/Document.js → Esquema de documentos generados vinculado a usuario.
+Se puede editar: campos del documento, tipos de documento, formato de almacenamiento.
+
+📁middleware/authMiddleware.js → Funciones protect y authorize para seguridad y roles.
+Se puede editar: reglas de acceso, roles permitidos, validación de tokens.
+
+📁routes/authRoutes.js → Endpoints de autenticación (login, CRUD Admin).
+Se puede editar: rutas de login, registro, endpoints para roles administrativos.
+
+📁routes/chatRoutes.js → Endpoints del chatbot.
+Se puede editar: rutas de consulta de chat, filtros o lógica de búsqueda de keywords.
+
+📁routes/documentRoutes.js → Endpoints de generación y gestión de documentos.
+Se puede editar: rutas para crear, descargar, listar documentos.
+
+📁controllers/authController.js → Lógica de login, registro y JWT.
+Se puede editar: generación de tokens, validación de credenciales, lógica de administración.
+
+📁controllers/chatController.js → Lógica del chatbot.
+Se puede editar: cómo se buscan respuestas, manejo de keywords, referencias legales.
+
+📁controllers/documentController.js → Lógica de generación de documentos.
+Se puede editar: plantillas, inyección de datos, formato final del documento.
+
 🎯 VENTAJAS DEL PROYECTO
 
 SOLUCIÓN REAL PARA PYMES QUE NO TIENEN ASESORÍA LEGAL.
