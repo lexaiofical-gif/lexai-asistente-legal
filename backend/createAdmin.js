@@ -1,3 +1,6 @@
+//SE USA PARA CREAR LA PRIMERA CUENTA DE ADMIN EN LA ABSE DE DATOS DE MONGODB Y INCRIPTA LA CONTRASEÑA NO NECESITA A 
+//SERVER.JS POR Q SE EJECUTA SOLO POR SEPARADO LA PRIMERA VEZ Q SE MONTA LA APAGINA
+
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 const dotenv = require('dotenv');
