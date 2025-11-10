@@ -24,10 +24,16 @@ let state = {
 };
 
 
-// Login
+// Login (Código Corregido para evitar Clics Duplicados)
 document.getElementById('login-form').addEventListener('submit', async (e) => {
     e.preventDefault();
     
+    // 1. Identificar el botón y deshabilitarlo
+    const loginButton = e.submitter; // Captura el elemento del botón que disparó el evento
+    loginButton.disabled = true;
+    loginButton.textContent = 'Verificando...'; // Opcional: Mostrar feedback de carga
+    showError('login-error', ''); // Limpiar errores anteriores
+
     const email = document.getElementById('login-email').value;
     const password = document.getElementById('login-password').value;
     
@@ -36,9 +42,16 @@ document.getElementById('login-form').addEventListener('submit', async (e) => {
         
         if (data.success) {
             await initializeUserSession(data.token, data.user);
+            // Si el login es exitoso, la vista cambia y el botón ya no necesita reactivarse
         }
     } catch (error) {
         showError('login-error', error.message);
+    } finally {
+        // 2. Reactivar el botón (si el login falló o si hay un error)
+        if (loginButton.disabled) {
+             loginButton.disabled = false;
+             loginButton.textContent = 'Entrar'; // Volver al texto original
+        }
     }
 });
 
