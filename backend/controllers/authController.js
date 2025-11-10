@@ -10,13 +10,15 @@
 // ================================================
 // 1️⃣ IMPORTACIONES NECESARIAS
 // ================================================
-const User = require('../models/User'); // MODELO DE USUARIO (CONEXIÓN CON MONGODB)
-const jwt = require('jsonwebtoken'); // CREA Y VERIFICA TOKENS JWT
+const User = require('../models/User'); 
+const jwt = require('jsonwebtoken'); 
 const {
-    sendWelcomeEmail,
-    sendPasswordChangeEmail,
-    sendVerificationEmail,
-    generateVerificationCode
+    sendWelcomeEmail,
+    sendPasswordChangeEmail,
+    sendVerificationEmail,
+    generateVerificationCode,
+    // ¡NUEVA FUNCIÓN AÑADIDA!
+    sendPasswordResetCode // ⬅️ DEBE ESTAR AQUÍ
 } = require('../config/email'); // FUNCIONES PARA ENVIAR CORREOS AUTOMÁTICOS
 
 // ================================================
