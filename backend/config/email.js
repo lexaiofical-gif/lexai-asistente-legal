@@ -156,3 +156,26 @@ module.exports = {
     sendVerificationEmail,
     generateVerificationCode
 };
+
+// Función para enviar email de recuperación (DEBES AÑADIR ESTO)
+const sendPasswordResetEmail = async (email, name, resetToken) => {
+    // ⚠️ ATENCIÓN: Esta URL DEBE apuntar a una vista en tu Frontend
+    // donde el usuario ingrese el nuevo password.
+    const resetUrl = `[Tu URL de Frontend]/reset-password?token=${resetToken}`;
+
+    const mailOptions = {
+        // ... (Configuración de FROM, TO, SUBJECT) ...
+        html: `
+             <h2>Hola ${name},</h2>
+             <p>Solicitaste un restablecimiento de contraseña. Haz clic en el enlace:</p>
+             <a href="${resetUrl}">Restablecer Contraseña</a>
+             <p>Este enlace expirará pronto.</p>
+        `
+    };
+    // ... (Llamada a transporter.sendMail) ...
+};
+
+module.exports = {
+    // ... exporta todas las demás funciones ...
+    sendPasswordResetEmail // ⬅️ ¡Añadir esta nueva exportación!
+};
