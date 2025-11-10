@@ -17,8 +17,8 @@ const {
     sendPasswordChangeEmail,
     sendVerificationEmail,
     generateVerificationCode,
-    // ¡NUEVA FUNCIÓN AÑADIDA!
-    sendPasswordResetCode // ⬅️ DEBE ESTAR AQUÍ
+    // ¡AÑADE ESTO!
+    sendPasswordResetCode // ⬅️ IMPORTAR LA FUNCIÓN DEL ARCHIVO email.js
 } = require('../config/email'); // FUNCIONES PARA ENVIAR CORREOS AUTOMÁTICOS
 
 // ================================================
