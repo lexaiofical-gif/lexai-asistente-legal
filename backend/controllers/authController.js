@@ -8,7 +8,7 @@
 // ================================================
 
 // ================================================
-// 1️⃣ IMPORTACIONES NECESARIAS
+// 1️⃣ IMPORTACIONES NECESARIAS (VERSIÓN FINAL SEGURA)
 // ================================================
 const User = require('../models/User'); 
 const jwt = require('jsonwebtoken'); 
@@ -16,9 +16,8 @@ const {
     sendWelcomeEmail,
     sendPasswordChangeEmail,
     sendVerificationEmail,
-    generateVerificationCode,
-    // ¡AÑADE ESTO!
-    sendPasswordResetCode // ⬅️ IMPORTAR LA FUNCIÓN DEL ARCHIVO email.js
+    generateVerificationCode, // Se asegura la coma
+    sendPasswordResetCode      // Se añade la nueva función
 } = require('../config/email'); // FUNCIONES PARA ENVIAR CORREOS AUTOMÁTICOS
 
 // ================================================
