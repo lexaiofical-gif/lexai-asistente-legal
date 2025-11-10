@@ -331,19 +331,27 @@ exports.deleteUser = async (req, res) => {
 // ================================================
 exports.changePassword = async (req, res) => {
     try {
+        // 1. BUSCAR USUARIO y EXPLICITAMENTE SELECCIONAR LA CONTRASEÑA (hash) para poder compararla
         const user = await User.findById(req.user.id).select('+password');
 
         const { currentPassword, newPassword } = req.body;
 
-        const isMatch = await user.matchPassword(currentPassword);
+        // 2. COMPARAR CONTRASEÑA ACTUAL USANDO EL MÉTODO CORRECTO
+        // 🚨 CORRECCIÓN: Usar comparePassword (definido en User.js)
+        const isMatch = await user.comparePassword(currentPassword);
+        
         if (!isMatch) {
             return res.status(400).json({ message: 'La contraseña actual no es correcta' });
         }
-
+        
+        // 3. ACTUALIZAR Y GUARDAR LA NUEVA CONTRASEÑA
+        // El middleware 'pre' en User.js hasheará automáticamente la nueva contraseña antes de guardar.
         user.password = newPassword;
         await user.save();
 
-        await sendPasswordChangeEmail(user.email, user.name);
+        // 4. ENVIAR NOTIFICACIÓN POR CORREO
+        // Se asume que sendPasswordChangeEmail está importado y es correcto.
+        await sendPasswordChangeEmail(user.email, user.name, newPassword);
 
         res.status(200).json({
             success: true,
@@ -351,7 +359,7 @@ exports.changePassword = async (req, res) => {
         });
 
     } catch (error) {
-        console.error(error);
+        console.error('Error durante el cambio de contraseña:', error);
         res.status(500).json({ message: 'Error al cambiar la contraseña' });
     }
 };
