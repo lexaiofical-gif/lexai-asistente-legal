@@ -79,12 +79,7 @@ exports.register = async (req, res) => {
 };
 
 // ================================================
-// 4️⃣ LOGIN (INICIO DE SESIÓN)
-// ================================================
-// PALABRA CLAVE: LOGIN / INICIAR SESIÓN
-// RUTA: POST /api/auth/login
-// QUIÉN LO ACTIVA: FRONTEND (BOTÓN DE “INICIAR SESIÓN”)
-// SE CONECTA CON: MODELO USER Y TOKEN JWT
+// 4️⃣ LOGIN (INICIO DE SESIÓN) - (CON VERIFICACIÓN DE ACTIVACIÓN)
 // ================================================
 exports.login = async (req, res) => {
     try {
@@ -102,7 +97,15 @@ exports.login = async (req, res) => {
             return res.status(400).json({ message: 'Contraseña incorrecta' });
         }
 
-        // VERIFICAR SI ESTÁ CONFIRMADO
+        // ⬇️ PASO C: VERIFICAR SI LA CUENTA ESTÁ ACTIVA ⬇️
+        // (Esto evita que usuarios "eliminados" lógicamente puedan entrar)
+        if (!user.isActive) {
+            return res.status(403).json({ // 403 = Prohibido
+                message: 'Tu cuenta ha sido desactivada. Contacta al administrador.' 
+            });
+        }
+        
+        // VERIFICAR SI ESTÁ CONFIRMADO (SI AÚN USAS ESTA LÓGICA)
         if (!user.isVerified) {
             return res.status(401).json({ message: 'Cuenta no verificada' });
         }
@@ -126,7 +129,6 @@ exports.login = async (req, res) => {
         res.status(500).json({ message: 'Error en el login' });
     }
 };
-
 // ================================================
 // 5.5️⃣ REENVIAR CÓDIGO DE VERIFICACIÓN (NUEVA FUNCIÓN)
 // ================================================
@@ -295,16 +297,17 @@ exports.getAllUsers = async (req, res) => {
 };
 
 // ================================================
-// 9️⃣ ELIMINAR USUARIO (ADMIN)
+// 9️⃣ DESACTIVAR USUARIO (ADMIN) - (YA NO ELIMINA)
 // ================================================
-// PALABRA CLAVE: ELIMINAR USUARIO
 // RUTA: DELETE /api/auth/users/:id
-// QUIÉN LO ACTIVA: ADMINISTRADOR DESDE PANEL
-// SE CONECTA CON: MIDDLEWARE authorize('admin')
 // ================================================
 exports.deleteUser = async (req, res) => {
     try {
-        const user = await User.findByIdAndDelete(req.params.id);
+        // Ya no usamos findByIdAndDelete, usamos findByIdAndUpdate
+        const user = await User.findByIdAndUpdate(req.params.id, 
+            { isActive: false }, // El cambio: marcar como inactivo
+            { new: true } // Opcional: para que devuelva el documento actualizado
+        );
 
         if (!user) {
             return res.status(404).json({ message: 'Usuario no encontrado' });
@@ -312,12 +315,41 @@ exports.deleteUser = async (req, res) => {
 
         res.status(200).json({
             success: true,
-            message: 'Usuario eliminado correctamente'
+            message: 'Usuario desactivado correctamente' // Mensaje actualizado
         });
 
     } catch (error) {
         console.error(error);
-        res.status(500).json({ message: 'Error al eliminar usuario' });
+        res.status(500).json({ message: 'Error al desactivar el usuario' });
+    }
+};
+
+
+// ================================================
+// 9.5️⃣ REACTIVAR USUARIO (ADMIN) - (NUEVA FUNCIÓN)
+// ================================================
+// RUTA: PUT /api/auth/users/:id/activate
+// ================================================
+exports.activateUser = async (req, res) => {
+    try {
+        const user = await User.findByIdAndUpdate(req.params.id, 
+            { isActive: true }, // El cambio: marcar como activo
+            { new: true }
+        );
+
+        if (!user) {
+            return res.status(404).json({ message: 'Usuario no encontrado' });
+        }
+
+        res.status(200).json({
+            success: true,
+            message: 'Usuario reactivado correctamente',
+            user // Opcional: devuelves el usuario actualizado
+        });
+
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Error al reactivar el usuario' });
     }
 };
 
