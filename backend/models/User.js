@@ -82,3 +82,37 @@ userSchema.methods.comparePassword = async function(candidatePassword) {
 // Crea y exporta el modelo para interactuar con la colección "users" en MongoDB
 module.exports = mongoose.model('User', userSchema);
 
+
+
+
+
+const userSchema = new mongoose.Schema({
+    name: {
+        type: String,
+        required: [true, 'Por favor ingrese un nombre'],
+    },
+    email: {
+        type: String,
+        required: [true, 'Por favor ingrese un email'],
+        unique: true,
+    },
+    // ... (campos de password, role, etc.) ...
+    
+    isVerified: {
+        type: Boolean,
+        default: false
+    },
+    
+    // ⬇️ AÑADE ESTE CAMPO ⬇️
+    isActive: {
+        type: Boolean,
+        default: true // Todos los usuarios nuevos estarán activos por defecto
+    },
+
+    joined: {
+        type: Date,
+        default: Date.now
+    }
+}, {
+    timestamps: true
+});
