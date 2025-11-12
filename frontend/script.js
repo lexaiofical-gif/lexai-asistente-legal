@@ -548,27 +548,84 @@ async function deleteDocument(docId) {
     }
 }
 
+// ================================================
+// CONFIGURACIÓN INICIAL (PLACEHOLDERS)
+// ================================================
+// NOTA: Estas funciones son placeholders. Asegúrate de que tu lógica de state y 
+// APIRequest maneje correctamente los tokens JWT.
+
+const API_URL = '/api/auth'; // Placeholder
+const state = {
+    currentUser: { 
+        id: '1234567890abcdef', // ID del usuario admin logueado (solo para deshabilitar su propia fila)
+        role: 'admin' 
+    }
+}; 
+
+// Función genérica para manejar todas las peticiones a la API
+async function apiRequest(endpoint, method, body = null) {
+    const token = localStorage.getItem('token'); // Asume que el token está en localStorage
+    
+    const headers = {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+    };
+
+    const config = {
+        method: method,
+        headers: headers,
+        body: body ? JSON.stringify(body) : null
+    };
+
+    const response = await fetch(`${API_URL}${endpoint}`, config);
+
+    if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message || `Error en la petición: ${response.statusText}`);
+    }
+
+    return response.json();
+}
+
+
 // ========================================
 // PANEL DE ADMINISTRADOR
 // ========================================
+
 function updateAdminUI() {
     loadAllUsers();
+    // loadAllChatHistory(); // Puedes reactivar esta línea si quieres cargar el historial al inicio
 }
 
 async function loadAllUsers() {
     try {
-        const data = await apiRequest('/auth/users', 'GET');
+        // La ruta /auth/users trae ahora el campo isActive
+        const data = await apiRequest('/users', 'GET');
         
         const tableBody = document.getElementById('admin-users-table');
         tableBody.innerHTML = '';
         
         if (!data.success || data.count === 0) {
-            tableBody.innerHTML = '<tr><td colspan="4" style="text-align: center; color: #6b7280;">No hay usuarios registrados.</td></tr>';
+            tableBody.innerHTML = '<tr><td colspan="5" style="text-align: center; color: #6b7280;">No hay usuarios registrados.</td></tr>';
             return;
         }
         
         data.users.forEach(user => {
             const isCurrentUser = user._id === state.currentUser.id;
+            const isActiveStatus = user.isActive ? 'Activo' : 'Desactivado';
+            const statusColor = user.isActive ? '#10b981' : '#f87171'; // Verde o Rojo
+
+            // ⬇️ LÓGICA DEL BOTÓN: Si está activo, muestra Desactivar. Si está inactivo, muestra Reactivar. ⬇️
+            const actionButton = user.isActive ? 
+                // Botón para Desactivar (Usa la función deactivateUser que llama a la ruta DELETE del backend)
+                `<button onclick="deactivateUser('${user._id}')" class="delete-btn" ${isCurrentUser ? 'disabled' : ''}>
+                    <i class="fas fa-trash"></i> Desactivar
+                </button>` : 
+                // Botón para Reactivar (Usa la función activateUser que llama a la ruta PUT del backend)
+                `<button onclick="activateUser('${user._id}')" class="activate-btn" ${isCurrentUser ? 'disabled' : ''} style="background-color: #3b82f6;">
+                    <i class="fas fa-undo"></i> Reactivar
+                </button>`;
+
             const row = document.createElement('tr');
             row.innerHTML = `
                 <td>${user.name}</td>
@@ -580,9 +637,10 @@ async function loadAllUsers() {
                     </select>
                 </td>
                 <td>
-                    <button onclick="deleteUser('${user._id}')" class="delete-btn" ${isCurrentUser ? 'disabled' : ''}>
-                        <i class="fas fa-trash"></i> Eliminar
-                    </button>
+                    <span style="color: ${statusColor}; font-weight: bold;">${isActiveStatus}</span>
+                </td>
+                <td>
+                    ${actionButton}
                 </td>
             `;
             tableBody.appendChild(row);
@@ -594,9 +652,10 @@ async function loadAllUsers() {
 
 async function updateUserRole(userId, newRole) {
     try {
-        const data = await apiRequest(`/auth/users/${userId}/role`, 'PUT', { role: newRole });
+        const data = await apiRequest(`/users/${userId}/role`, 'PUT', { role: newRole });
         
         if (data.success) {
+            alert('Rol actualizado correctamente.');
             loadAllUsers();
         }
     } catch (error) {
@@ -604,22 +663,52 @@ async function updateUserRole(userId, newRole) {
     }
 }
 
-async function deleteUser(userId) {
-    if (!confirm('¿Estás seguro de que deseas eliminar este usuario?')) {
+// ========================================
+// FUNCIÓN PARA DESACTIVAR (SOFT DELETE)
+// ========================================
+async function deactivateUser(userId) {
+    if (!confirm('¿Estás seguro de que deseas desactivar este usuario? Se deshabilitará el acceso, pero su historial se mantendrá.')) {
         return;
     }
     
     try {
-        const data = await apiRequest(`/auth/users/${userId}`, 'DELETE');
+        // La ruta DELETE ahora solo cambia isActive: false en el Backend.
+        const data = await apiRequest(`/users/${userId}`, 'DELETE');
         
         if (data.success) {
             loadAllUsers();
+            alert('Usuario desactivado correctamente.');
         }
     } catch (error) {
-        alert('Error al eliminar el usuario: ' + error.message);
+        alert('Error al desactivar el usuario: ' + error.message);
     }
 }
 
+// ========================================
+// FUNCIÓN PARA REACTIVAR
+// ========================================
+async function activateUser(userId) {
+    if (!confirm('¿Deseas reactivar la cuenta de este usuario para que pueda iniciar sesión?')) {
+        return;
+    }
+    
+    try {
+        // Usamos la nueva ruta PUT /activate del Backend
+        const data = await apiRequest(`/users/${userId}/activate`, 'PUT'); 
+        
+        if (data.success) {
+            loadAllUsers();
+            alert('Usuario reactivado correctamente.');
+        }
+    } catch (error) {
+        alert('Error al reactivar el usuario: ' + error.message);
+    }
+}
+
+// ========================================
+// GESTIÓN DEL HISTORIAL DE CHAT
+// (Código original del usuario, asume que /chat/history/all existe)
+// ========================================
 async function loadAllChatHistory() {
     try {
         const data = await apiRequest('/chat/history/all', 'GET');
@@ -633,6 +722,7 @@ async function loadAllChatHistory() {
         }
         
         data.data.forEach(entry => {
+            // Asume que el Backend está haciendo un 'populate' de userId
             const userName = entry.userId ? entry.userId.name : 'Usuario eliminado';
             const userEmail = entry.userId ? entry.userId.email : entry.userEmail;
             const date = new Date(entry.timestamp).toLocaleString('es-CO');
@@ -650,7 +740,6 @@ async function loadAllChatHistory() {
         console.error('Error loading chat history:', error);
     }
 }
-
 // ========================================
 // INICIALIZACIÓN
 // ========================================
