@@ -135,42 +135,42 @@ exports.login = async (req, res) => {
 // QUIÉN LO ACTIVA: FRONTEND (BOTÓN "reenviar código")
 // SE CONECTA CON: MODELO USER Y EMAIL
 // ================================================
-exports.resendCode = async (req, res) => {
-    try {
-        const { email } = req.body;
+//exports.resendCode = async (req, res) => {
+//    try {
+//        const { email } = req.body;
 
-        const user = await User.findOne({ email });
-        if (!user) {
+//        const user = await User.findOne({ email });
+//        if (!user) {
             // Mensaje de seguridad genérico
-            return res.status(200).json({ message: 'Si la cuenta existe, se ha enviado un nuevo código.' });
-        }
+ //           return res.status(200).json({ message: 'Si la cuenta existe, se ha enviado un nuevo código.' });
+ //       }
         
-        // No permitir reenviar si ya está verificada
-        if (user.isVerified) {
-            return res.status(400).json({ message: 'La cuenta ya está verificada.' });
-        }
+ //       // No permitir reenviar si ya está verificada
+  //      if (user.isVerified) {
+  //          return res.status(400).json({ message: 'La cuenta ya está verificada.' });
+  //      }
 
         // 1. Generar nuevo código
-        const newVerificationCode = generateVerificationCode();
+    //    const newVerificationCode = generateVerificationCode();
 
         // 2. Actualizar usuario con nuevo código y expiración (usa la misma lógica de expiración que en ForgotPassword)
-        user.verificationCode = newVerificationCode;
-        user.verificationCodeExpires = Date.now() + 15 * 60 * 1000; // 15 minutos de validez
-        await user.save({ validateBeforeSave: false }); 
+    //    user.verificationCode = newVerificationCode;
+    //    user.verificationCodeExpires = Date.now() + 15 * 60 * 1000; // 15 minutos de validez
+    //    await user.save({ validateBeforeSave: false }); 
 
         // 3. Enviar nuevo correo de verificación
-        await sendVerificationEmail(user.email, user.name, newVerificationCode);
+     //   await sendVerificationEmail(user.email, user.name, newVerificationCode);
 
-        res.status(200).json({
-            success: true,
+     //   res.status(200).json({
+    //        success: true,
             message: 'Nuevo código de verificación enviado a tu correo.'
         });
 
-    } catch (error) {
-        console.error('Error en resendCode:', error);
-        res.status(500).json({ message: 'Error al reenviar el código.' });
-    }
-};
+    //} catch (error) {
+     //   console.error('Error en resendCode:', error);
+    //    res.status(500).json({ message: 'Error al reenviar el código.' });
+  //  }
+//};
 
 
 // ================================================
